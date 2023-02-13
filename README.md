@@ -1,2 +1,7 @@
-# IBM-Project-Bravo
+# IBM Project Bravo
+
+
+## Description
 Dashboard
+
+### Team
