@@ -21,3 +21,13 @@ Desarrollar competencias de trabajo y convivencia profesional que sean aplicable
 	- Comodidad
 	- Eficiencia
 	- Responsabilidad
+
+## Configuration:
+
+First activate enviroment
+
+`cd venv/Scripts/activate`
+
+Install requirements
+
+`python -m pip install -r requirements.txt`
