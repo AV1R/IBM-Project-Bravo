@@ -24,7 +24,13 @@ Desarrollar competencias de trabajo y convivencia profesional que sean aplicable
 
 ## Configuration:
 
-First activate enviroment
+Install environment
+py -3.9 -m pip install virtualenv
+
+Use environment
+py -3.9 -m virtualenv venv
+
+Activate environment
 
 `cd venv/Scripts/activate`
 
