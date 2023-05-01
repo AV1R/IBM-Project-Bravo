@@ -8,7 +8,7 @@ Ariel Andrés López Correa - A01637570
 
 - ## Mision
 	Desarrollar soluciones de software a medida del cliente; utilizando practicas profesionales saludables para los miembros del equipo cumpliendo con y excediendo los estandares de la industria.
-	
+
 - ## Vision
 Desarrollar competencias de trabajo y convivencia profesional que sean aplicables a nuestra industria asi como explorar los distintos roles que existen en un equipo profesional.
 
