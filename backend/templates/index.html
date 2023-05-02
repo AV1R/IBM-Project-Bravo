@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FlaskApp</title>
+</head>
+<body>
+
+    <h1>SignUp</h1>
+    <hr>
+    <div class="content">
+    <form method="post">
+        <p>
+            <b><label for="email">Email</label></b>
+   
+            <input type="email" name="email" required
+                placeholder="name@example.com"></input>
+        </p>
+
+        <p>
+            <b><label for="password">Password</label></b>
+  
+            <input id="password" name="password" required type="password" value="Important">
+        </p>
+            <p>
+                <b><label for="password1">Password</label></b>
+      
+                <input id="password1" name="password1" required type="password" value="Important">
+            </p>
+            
+        <button type="submit">Submit</button>
+    </form>
+    {%if success%}
+    <h1>{{succes}}</h1>
+    {%endif%}
+    {%if error%}
+    <h1>{{error}}</h1>
+    {%endif%}
+    </div>
+</body>
+</html>

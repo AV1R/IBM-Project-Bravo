@@ -25,4 +25,7 @@ urlpatterns = [
     path("signup/", _views.signupuser, name="signupuser"),
     path("login/", _views.loginuser, name="loginuser"),
     path("logout/", _views.logoutuser, name="logoutuser"),
+    # Dashboard
+    path("dashboard/", _views.dashboard, name="dashboard"),
+
 ]

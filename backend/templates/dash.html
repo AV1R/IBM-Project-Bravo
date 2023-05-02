@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>FlaskApp</title>
+    <style>
+      .todo {
+        padding: 20px;
+        margin: 10px;
+        background-color: #eee;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Dashboard</h1>
+    <hr />
+    <div class="content">
+      <table>
+        <thead>
+          <tr>
+            <th>UID</th>
+            <th>CERTIFICATION</th>
+            <th>LOCATION</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in data %}
+            <tr>
+              <td>{{ item.uid }}</td>
+              <td>{{ item.certification }}</td>
+              <td>{{ item.work_location }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
