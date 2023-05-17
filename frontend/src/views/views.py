@@ -5,6 +5,7 @@ import requests
 localhost='127.0.0.1'
 port=5000
 url=f'http://{localhost}:{port}/'
+
 def home(request):
     return render(request, "public/home.html")
 
