@@ -24,30 +24,30 @@
   <body>
     <div class="container">
       <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom ">
-        <a href="{% url 'signupuser' %}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+        <a href="{% url 'signup' %}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
         <svg class="bi m-1" width="80" height="32"><use xlink:href="#ibm"/></svg>
         </a>
 
         <ul class="nav nav-pills">
-            {%if user.is_authenticated%}
+            {%if request.session.jwt_token%}
             <li class="nav-item">
-                <a href="{% url 'dashboard' %}" class="nav-link" >Dashboard</a>
+                <a href="{% url 'dashboard' %}" class="nav-link" > {{request.session.user.first_name}}</a>
             </li>
             <li class="nav-item">
-                <span class="fs-4" > <img class="rounded" style="width:30px;" src="{% static 'dashboard/user.jpg' %}" alt=""> {{user.username}}</span>
+                <span class="fs-4" > <img class="rounded" style="width:30px;" src="{% static 'dashboard/user.jpg' %}" alt=""> {{request.session.user.email}}</span>
             </li>
               <li class="nav-item">
-                <form action="{% url 'logoutuser'%}" method="POST">
+                <form action="{% url 'logout'%}" method="POST">
                     {%csrf_token%}
                     <button type="submit" class="nav-link" >Logout</button>
                 </form>
             </li>
             {%else%}
             <li class="nav-item">
-                <a href="{% url 'signupuser'%}" class="nav-link " >Sign up</a>
+                <a href="{% url 'signup'%}" class="nav-link " >Sign up</a>
             </li>
             <li class="nav-item">
-                <a role="button" href="{% url 'loginuser'%}" class="btn btn-dark" >Login</a>
+                <a role="button" href="{% url 'login'%}" class="btn btn-dark" >Login</a>
             </li>
 
             {%endif%}

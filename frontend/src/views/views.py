@@ -1,76 +1,130 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
-import requests
-# Create your views here.
-localhost='127.0.0.1'
-port=5000
-url=f'http://{localhost}:{port}/'
+import requests, json
+from .decorators import session_auth_required, session_auth_not_required
+import jwt
+from django.conf import settings
 
+# Decorator token
+
+# Create your views here.
+localhost = "127.0.0.1"
+port = 5000
+url = f"http://{localhost}:{port}/"
+
+
+@session_auth_required
+def getUserContext(request):
+    if "jwt_token" in request.session:
+        jwt_token = request.session["jwt_token"]
+        try:
+            user = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms=["HS256"])
+            request.session["user"] = user
+            return user
+            # Do something with the email
+        except jwt.DecodeError:
+            # Handle invalid token
+            pass
+    else:
+        # Handle case when jwt_token is not present in session
+        pass
+
+
+@session_auth_not_required
+def login(request):
+    if request.method == "POST":
+        # Enviar las credenciales al backend Flask para autenticar
+        user = {
+            "email": request.POST["email"],
+            "password": request.POST["password"],
+        }
+
+        headers = {"Content-Type": "application/json"}  # Specify JSON content type
+
+        response = requests.post(f"{url}/login", data=json.dumps(user), headers=headers)
+        if response.status_code == 200:
+            # Si el inicio de sesión fue exitoso, guardar el token JWT en la sesión de Django
+            token = response.json()
+            request.session["jwt_token"] = token["token"]
+            # Redirigir a la vista protegida
+            return redirect("dashboard")
+        else:
+            # Si el inicio de sesión falló, mostrar el mensaje de error
+            return render(
+                request,
+                "public/login.html",
+                {"form": user, "error": "Email o contraseña invalidos"},
+            )
+
+    return render(request, "public/login.html")
+
+
+@session_auth_not_required
 def home(request):
     return render(request, "public/home.html")
 
 
-def loginuser(request):
-    if request.method == 'GET':
-        return render(request, 'public/login.html')
-    else:
-        user = {"username": request.POST['username'], "password": request.POST['password']}
-        # user exists
-        if user is None:
-            # if not exists
-            return render(request, 'public/login.html', {'form': user, 'error': 'Username or password did not match'})
-        else:
-            # login user if exists via endpoint and return json web token and create session
-            return HttpResponse("Logged: username: " + user['username'] + " password: " + user['password'])
-            # and redirect
-            # return redirect('currenttodos')
+@session_auth_not_required
+def signup(request):
+    if request.method == "POST":
+        # Enviar las credenciales al backend Flask para autenticar
+        user = {
+            "email": request.POST["email"],
+            "first_name": request.POST["first_name"],
+            "second_name": request.POST["second_name"],
+            "password": request.POST["password"],
+            "password1": request.POST["password1"],
+        }
+        if user["password"] == user["password1"]:
+            headers = {"Content-Type": "application/json"}  # Specify JSON content type
 
-
-def signupuser(request):
-    if request.method == 'GET':
-        return render(request, 'public/signup.html')
-    else:
-        # Create a new user
-        user = {"username": request.POST['username'], "password": request.POST['password1']}
-        if request.POST['password1'] == request.POST['password2']:
-            try:
-                # create user if not exists via endpoint and return json web token and create session
-                return HttpResponse("Logged: " + user['username'] + " " + user['password'])
-            except:
-                err = "The username has already been taken. Please choose a new username"
-                return render(request, 'public/signup.html', {'form': user, 'error': err})
-
+            response = requests.post(
+                f"{url}/register", data=json.dumps(user), headers=headers
+            )
+            if response.status_code == 200:
+                # Si el inicio de sesión fue exitoso, guardar el token JWT en la sesión de Django
+                token = response.json()
+                request.session["jwt_token"] = token["token"]
+                # Redirigir a la vista protegida
+                return redirect("dashboard")
+            else:
+                # Si el inicio de sesión falló, mostrar el mensaje de error
+                return render(
+                    request,
+                    "public/signup.html",
+                    {"form": user, "error": "El email ya esta registrado"},
+                )
         else:
             # Tell the user the passwords didn't match
-            err = "Passwords didn't match"
-            return render(request, 'public/signup.html', {'form': user, 'error': err})
+            err = "La contraseña no coincide"
+            return render(request, "public/signup.html", {"form": user, "error": err})
+    return render(request, "public/signup.html")
 
-def getDashByUser(user):
-    # get dashboard by user
-    # get data from endpoint
-    certificates=f'{url}dash-api'
-    response = requests.get(certificates)
-    
-    if response.status_code == 200:
-        try:
-            data = response.json()
-            return data['data']
-        except:
-            return []
-    else:
-        return []
 
+@session_auth_required
 def dashboard(request):
-    data= getDashByUser("uid")
-    # for item in data:
-    #     print(item["_id"],"\n\n\n")
-    # print("JSON RESPONSE:\n",data['dashboard'][0],"\n json works")
-    if data==[]:
-        return render(request, 'private/dashboard.html', {"error":f"No existe ningun dashboard"})
-    else:    
-        return render(request, 'private/dashboard.html', {"data":data[:10]})
-    
+    userContext = getUserContext(request)
+    userEmail = {"email": userContext["email"]}
+    headers = {"Content-Type": "application/json"}  # Specify JSON content type
 
-def logoutuser(request):
+    response = requests.get(f"{url}/dash", data=json.dumps(userEmail), headers=headers)
+    _data = response.json()
+    if "error" in _data:
+        return render(
+            request,
+            "private/dashboard.html",
+            {"error": f"No existe ningun dashboard", "user": userContext["first_name"]},
+        )
+    else:
+        data = _data["dashboard"]
+        return render(
+            request,
+            "private/dashboard.html",
+            {"data": data[:10], "user": userContext["first_name"]},
+        )
+
+
+def logout(request):
     # Clean cookies and redirect
-    return render(request, "public/home.html")
+    request.session.flush()
+    return redirect("login")
