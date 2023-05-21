@@ -29,38 +29,38 @@
     <div class="tab-pane container {% if forloop.counter == 1 %}show active{% endif %}" id="dsh{{ dsh.id }}">
       {% comment %} Charts {% endcomment %}
       <div class="row m-5">
-        <div class="bx--grid col-6 p-0">
+        <div class="bx--grid col-xl-6 col-sm-12 col-md-12 p-0 text-start ">
             <div class="bx--row">
                 <div class="bx--col-lg-16">
                     <h1 class="bx--type-beta">Certification Bar Chart</h1>
-                    {{ chart_1div|safe }}
+                    {{ dsh.chart_1div|safe }}
                 </div>
             </div>
           </div>
         
-          <div class="bx--grid col-6 p-0">
+          <div class="bx--grid col-xl-6 col-sm-12 col-md-12  p-0 text-start">
             <div class="bx--row">
                 <div class="bx--col-lg-16">
                     <h1 class="bx--type-beta">Department Distribution</h1>
-                    {{ chart_2div|safe }}
+                    {{ dsh.chart_2div|safe }}
                 </div>
             </div>
           </div>
         
-          <div class="bx--grid col-6  p-0">
+          <div class="bx--grid col-xl-6 col-sm-12 col-md-12  p-0 text-start">
             <div class="bx--row">
                 <div class="bx--col-lg-16">
                     <h1 class="bx--type-beta">Top 5 | Bottom 5</h1>
-                    {{ chart_3div|safe }}
+                    {{ dsh.chart_3div|safe }}
                 </div>
             </div>
           </div>
         
-          <div class="bx--grid col-6  p-0">
+          <div class="bx--grid col-xl-6 col-sm-12 col-md-12  p-0 text-start">
             <div class="bx--row">
                 <div class="bx--col-lg-16">
                     <h1 class="bx--type-beta">Certification Distribution</h1>
-                    {{ chart_4div|safe }}
+                    {{ dsh.chart_4div|safe }}
                 </div>
             </div>
           </div>        
@@ -93,15 +93,14 @@
           <h1>Información del dashboard</h1>
           <div class="row">
             <div class="col-4">
-              <h6>Actualizar</h6>
-              <div class="input-group">
-                <input type="file" class="form-control" id="inputGroupFile" aria-describedby="inputGroupFileAddon">
-                <label class="input-group-text" for="inputGroupFile"></label>
+              <div class="bx--file">
+                <input class="bx--file-input" type="file" id="file-upload" name="file-upload" accept=".csv">
+                <label for="file-upload" class="bx--btn bx--btn--primary">Actualizar</label>
               </div>
+       
             </div>
             <div class="col-4">
-              <h6>Eliminar</h6>
-              <button type="button" class="btn btn-danger">Eliminar</button>
+              <button type="button" class="bx--btn bx--btn--danger">Eliminar</button>
             </div>
           </div>
         </div>
