@@ -111,10 +111,22 @@ def chart_1():
                 y=y_labels,
                 orientation="h",
                 marker=dict(color="#054ada"),  # IBM blue color
+                text=y_values,
+                textposition="auto",
+                textfont=dict(color="white"),  # Set text color to white
             )
         ],
         layout=go.Layout(
-            xaxis=dict(title="Percentage"), yaxis=dict(title="Certification")
+            xaxis=dict(
+                title="Percentage", title_font=dict(color="white")
+            ),  # Set x-axis title text color to white
+            yaxis=dict(
+                title="Certification",
+                title_font=dict(color="white"),
+                tickfont=dict(color="white"),
+            ),  # Set y-axis title and tick labels text color to white
+            plot_bgcolor="rgba(0, 0, 0, 0)",  # Transparent plot background
+            paper_bgcolor="rgba(0, 0, 0, 0)",  # Transparent paper background
         ),
     )
 
@@ -142,8 +154,13 @@ def chart_2():
         ],
         layout=go.Layout(
             legend=dict(
-                orientation="h", yanchor="bottom", y=-0.2
+                orientation="h",
+                yanchor="bottom",
+                y=-0.2,
+                font=dict(color="white"),  # Set annotation text color to white
             ),  # Position the legend at the bottom
+            plot_bgcolor="rgba(0, 0, 0, 0)",  # Transparent plot background
+            paper_bgcolor="rgba(0, 0, 0, 0)",  # Transparent paper background
         ),
     )
 
@@ -151,7 +168,7 @@ def chart_2():
 
 
 def chart_3():
-    x_top = list(range(1, 6))  # IDs for top 5
+    """x_top = list(range(1, 6))  # IDs for top 5
     y_top = [12, 10, 8, 6, 5]  # Values for top 5
 
     x_bottom = list(range(6, 11))  # IDs for bottom 5
@@ -172,6 +189,52 @@ def chart_3():
         xaxis=dict(title="ID"),
         yaxis=dict(title="Value"),
         barmode="group",  # Display bars side by side
+    )"""
+
+    top_ids = list(range(1, 6))
+    bottom_ids = list(range(6, 11))
+
+    top_values = [12, 10, 8, 6, 5]  # Example values for the top 5
+    bottom_values = [3, 2, 2, 1, 0]  # Example values for the bottom 5
+
+    colors = ["#008000"] * 5 + ["#FF0000"] * 5  # Green for top 5, Red for bottom 5
+
+    fig = go.Figure(
+        data=[
+            go.Bar(
+                x=top_ids + bottom_ids,
+                y=top_values + bottom_values,
+                marker=dict(
+                    color=colors, line=dict(color="white", width=1)
+                ),  # Set bar colors and white line border
+                text=top_values + bottom_values,
+                textposition="auto",
+                textfont=dict(color="white"),  # Set text color to white
+            )
+        ]
+    )
+
+    fig.update_layout(
+        # title={
+        #    'text': 'Top 5 and Bottom 5 Values',
+        #    'font': {'color': 'white'}  # Set title text color to white
+        # },
+        xaxis={
+            "title": "IDs",
+            "title_font": {"color": "white"},  # Set x-axis title text color to white
+            "tickfont": {
+                "color": "white"
+            },  # Set x-axis tick labels text color to white
+        },
+        yaxis={
+            "title": "Values",
+            "title_font": {"color": "white"},  # Set y-axis title text color to white
+            "tickfont": {
+                "color": "white"
+            },  # Set y-axis tick labels text color to white
+        },
+        plot_bgcolor="rgba(0, 0, 0, 0)",  # Transparent plot background
+        paper_bgcolor="rgba(0, 0, 0, 0)",  # Transparent paper background
     )
 
     return fig.to_html(full_html=False, default_height=500, default_width=700)
@@ -242,7 +305,10 @@ def chart_4():
         ],
         layout=go.Layout(
             legend=dict(
-                orientation="h", yanchor="bottom", y=-0.2
+                orientation="h",
+                yanchor="bottom",
+                y=-0.2,
+                font=dict(color="white"),  # Set annotation text color to white
             ),  # Position the legend at the bottom
             updatemenus=[
                 dict(
@@ -268,6 +334,8 @@ def chart_4():
                     yanchor="top",
                 )
             ],
+            plot_bgcolor="rgba(0, 0, 0, 0)",  # Transparent plot background
+            paper_bgcolor="rgba(0, 0, 0, 0)",  # Transparent paper background
         ),
     )
 
