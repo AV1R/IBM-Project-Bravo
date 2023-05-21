@@ -14,23 +14,6 @@ port = 5000
 url = f"http://{localhost}:{port}"
 
 
-@session_auth_required
-def getUserContext(request):
-    if "jwt_token" in request.session:
-        jwt_token = request.session["jwt_token"]
-        try:
-            user = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms=["HS256"])
-            request.session["user"] = user
-            return user
-            # Do something with the email
-        except jwt.DecodeError:
-            # Handle invalid token
-            pass
-    else:
-        # Handle case when jwt_token is not present in session
-        pass
-
-
 @session_auth_not_required
 def login(request):
     if request.method == "POST":
@@ -56,7 +39,6 @@ def login(request):
                 "public/login.html",
                 {"form": user, "error": "Email o contraseña invalidos"},
             )
-
     return render(request, "public/login.html")
 
 
@@ -290,6 +272,50 @@ def chart_4():
     )
 
     return fig.to_html(full_html=False, default_height=500, default_width=700)
+
+
+@session_auth_required
+def getUserContext(request):
+    if "jwt_token" in request.session:
+        jwt_token = request.session["jwt_token"]
+        try:
+            user = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms=["HS256"])
+            request.session["user"] = user
+            return user
+            # Do something with the email
+        except jwt.DecodeError:
+            # Handle invalid token
+            pass
+    else:
+        # Handle case when jwt_token is not present in session
+        pass
+
+
+@session_auth_required
+def user_settings(request):
+    return render(request, "private/user-settings.html")
+
+
+@session_auth_required
+def add(request):
+    return render(request, "private/add.html")
+
+
+@session_auth_required
+def getUserContext(request):
+    if "jwt_token" in request.session:
+        jwt_token = request.session["jwt_token"]
+        try:
+            user = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms=["HS256"])
+            request.session["user"] = user
+            return user
+            # Do something with the email
+        except jwt.DecodeError:
+            # Handle invalid token
+            pass
+    else:
+        # Handle case when jwt_token is not present in session
+        pass
 
 
 @session_auth_required

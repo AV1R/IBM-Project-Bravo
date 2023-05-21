@@ -4,7 +4,7 @@
 
 <nav class="d-flex justify-content-between">
   <h1>Dashboard</h1>
-  <a class="bx--btn bx--btn--primary" href="#">Agregar</a>
+  <a class="bx--btn bx--btn--primary" href="{% url 'add' %}">Agregar</a>
 </nav>
 
   <hr />
@@ -27,10 +27,8 @@
 <div class="tab-content mt-1" style="background-color: white;">
   {% for dsh in dashboards %}
     <div class="tab-pane container {% if forloop.counter == 1 %}show active{% endif %}" id="dsh{{ dsh.id }}">
-
       {% comment %} Charts {% endcomment %}
       <div class="row m-5">
-
         <div class="bx--grid col-6 p-0">
             <div class="bx--row">
                 <div class="bx--col-lg-16">

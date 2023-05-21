@@ -30,7 +30,7 @@
         <svg class="bi m-1" width="80" height="32"><use xlink:href="#ibm"/></svg>
         </a> {% endcomment %}
         <header class="bx--header custom-header">
-          <div class="bx--header__name text-white m-5">IBM Certificates</div>
+          <a class="bx--header__name text-white m-5" href="{% url 'dashboard'%}">IBM Certificates</a>
           <div class="bx--header__global">
  
             {%if request.session.jwt_token%}
@@ -43,7 +43,7 @@
                 <li class="m-3">{{request.session.user.first_name}}
                   {{request.session.user.second_name}}
                 </li>
-                <li class="bx--btn bx--btn--secondary w-100" href="#">Settings</li>
+                <a class="bx--btn bx--btn--secondary w-100" href="{% url 'settings' %}">Settings</a>
                 <li  class="m-0 p-0">
                   <form action="{% url 'logout'%}" method="POST" >
                     {%csrf_token%}

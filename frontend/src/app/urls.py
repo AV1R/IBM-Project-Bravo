@@ -25,6 +25,8 @@ urlpatterns = [
     path("signup/", _views.signup, name="signup"),
     path("login/", _views.login, name="login"),
     path("logout/", _views.logout, name="logout"),
-    # Dashboard
+    # Private
     path("dashboard/", _views.dashboard, name="dashboard"),
+    path("settings/", _views.user_settings, name="settings"),
+    path("add/", _views.add, name="add"),
 ]
