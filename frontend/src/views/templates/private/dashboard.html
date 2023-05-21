@@ -1,30 +1,85 @@
 {% extends 'public/base.html' %}
+
 {% block content %}
+
+<nav class="d-flex justify-content-between">
   <h1>Dashboard</h1>
+  <a class="bx--btn bx--btn--primary" href="#">Agregar</a>
+</nav>
+
   <hr />
   <div class="content">
     {% if error %}
       <div class="alert alert-danger" role="alert">{{ error }}</div>
     {% endif %}
-    {% if data %}
-      <table>
-        <thead>
-          <tr>
-            <th>UID</th>
-            <th>CERTIFICATION</th>
-            <th>LOCATION</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in data %}
+
+
+<!-- Nav pills -->
+<ul class="nav nav-pills">
+  {% for dsh in dashboards %}
+    <li class="nav-item">
+      <a class="bx--btn bx--btn--secondary {% if forloop.counter == 1 %}active {% endif %}" data-bs-toggle="pill" href="#dsh{{ dsh.id }}">{{ dsh.title }}</a>
+    </li>
+  {% endfor %}
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content mt-1">
+  {% for dsh in dashboards %}
+    <div class="tab-pane container {% if forloop.counter == 1 %}show active{% endif %}" id="dsh{{ dsh.id }}">
+
+      {% comment %} Charts {% endcomment %}
+      <div class="row m-5">
+        {% comment %} Table {% endcomment %}
+        <div class="col-4">
+        <table class="mt-5 mb-5">
+          <thead>
             <tr>
-              <td>{{ item.uid }}</td>
-              <td>{{ item.certification }}</td>
-              <td>{{ item.work_location }}</td>
+              <th>UID</th>
+              <th>CERTIFICATION</th>
+              <th>LOCATION</th>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% endif %}
-  </div>
+          </thead>
+          <tbody>
+            {% for item in dsh.data %}
+              <tr>
+                <td>{{ item.uid }}</td>
+                <td>{{ item.certification }}</td>
+                <td>{{ item.work_location }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% comment %} Settings {% endcomment %}
+    <div class="row m-5">
+      <div class="col-12">
+        <div class="mt-4 mb-4 p-5 ">
+          <h1>Información del dashboard</h1>
+          <div class="row">
+            <div class="col-4">
+              <h6>Actualizar</h6>
+              <div class="input-group">
+                <input type="file" class="form-control" id="inputGroupFile" aria-describedby="inputGroupFileAddon">
+                <label class="input-group-text" for="inputGroupFile"></label>
+              </div>
+            </div>
+            <div class="col-4">
+              <h6>Eliminar</h6>
+              <button type="button" class="btn btn-danger">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    </div>
+  {% endfor %}
+</div>
+
+
+</div>
 {% endblock %}

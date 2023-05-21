@@ -10,7 +10,7 @@ from django.conf import settings
 # Create your views here.
 localhost = "127.0.0.1"
 port = 5000
-url = f"http://{localhost}:{port}/"
+url = f"http://{localhost}:{port}"
 
 
 @session_auth_required
@@ -116,11 +116,15 @@ def dashboard(request):
             {"error": f"No existe ningun dashboard", "user": userContext["first_name"]},
         )
     else:
-        data = _data["dashboard"]
+        dashboards = [
+            {"id": 1, "title": "DSH 1", "data": _data["dashboard"][:10]},
+            {"id": 2, "title": "DSH 2", "data": _data["dashboard"][:5]},
+            {"id": 3, "title": "DSH 3", "data": _data["dashboard"][:2]},
+        ]
         return render(
             request,
             "private/dashboard.html",
-            {"data": data[:10], "user": userContext["first_name"]},
+            {"dashboards": dashboards, "user": userContext["first_name"]},
         )
 
 
