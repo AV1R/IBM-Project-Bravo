@@ -24,14 +24,50 @@
 </ul>
 
 <!-- Tab panes -->
-<div class="tab-content mt-1">
+<div class="tab-content mt-1" style="background-color: white;">
   {% for dsh in dashboards %}
     <div class="tab-pane container {% if forloop.counter == 1 %}show active{% endif %}" id="dsh{{ dsh.id }}">
 
       {% comment %} Charts {% endcomment %}
       <div class="row m-5">
+
+        <div class="bx--grid col-6 p-0">
+            <div class="bx--row">
+                <div class="bx--col-lg-16">
+                    <h1 class="bx--type-beta">Certification Bar Chart</h1>
+                    {{ chart_1div|safe }}
+                </div>
+            </div>
+          </div>
+        
+          <div class="bx--grid col-6 p-0">
+            <div class="bx--row">
+                <div class="bx--col-lg-16">
+                    <h1 class="bx--type-beta">Department Distribution</h1>
+                    {{ chart_2div|safe }}
+                </div>
+            </div>
+          </div>
+        
+          <div class="bx--grid col-6  p-0">
+            <div class="bx--row">
+                <div class="bx--col-lg-16">
+                    <h1 class="bx--type-beta">Dist</h1>
+                    {{ chart_3div|safe }}
+                </div>
+            </div>
+          </div>
+        
+          <div class="bx--grid col-6  p-0">
+            <div class="bx--row">
+                <div class="bx--col-lg-16">
+                    <h1 class="bx--type-beta">Certification Distribution</h1>
+                    {{ chart_4div|safe }}
+                </div>
+            </div>
+          </div>        
         {% comment %} Table {% endcomment %}
-        <div class="col-4">
+       <div class="col-4">
         <table class="mt-5 mb-5">
           <thead>
             <tr>
@@ -50,7 +86,7 @@
             {% endfor %}
           </tbody>
         </table>
-      </div>
+      </div> 
     </div>
     {% comment %} Settings {% endcomment %}
     <div class="row m-5">
