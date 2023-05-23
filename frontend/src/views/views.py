@@ -14,6 +14,27 @@ port = 5000
 url = f"http://{localhost}:{port}"
 
 
+# @session_auth_required
+# def search(request):
+#     if request.method == "POST":
+#         dshId = request.POST.get("dshid")
+#         target = request.POST.get("search")
+#         userContext = getUserContext(request)
+#         search = {"owner": userContext["email"], "dsh": dshId, "target": target}
+#         headers = {"Content-Type": "application/json"}  # Specify JSON content type
+#         response = requests.get(
+#             f"{url}/dash/search", data=json.dumps(search), headers=headers
+#         )
+#         _data = response.json()
+#         print(_data)
+#         if _data:
+#             table = _data["table"]
+#             return JsonResponse({"table": table})  # Return the table content as JSON
+
+#     # If no data is found or if the request method is not POST, return an empty JSON response
+#     return JsonResponse({})
+
+
 @session_auth_not_required
 def login(request):
     if request.method == "POST":
@@ -327,11 +348,14 @@ def chart_4():
                         for cert in certifications
                     ],
                     direction="down",
-                    showactive=True,
+                    showactive=False,
                     x=0.5,
                     xanchor="center",
                     y=1.1,
                     yanchor="top",
+                    bgcolor="black",  # Set dropdown background color to black
+                    font=dict(color="white"),  # Set dropdown text color to white
+                    # activecolor="gray",  # Set active dropdown color to gray
                 )
             ],
             plot_bgcolor="rgba(0, 0, 0, 0)",  # Transparent plot background
@@ -370,35 +394,20 @@ def add(request):
 
 
 @session_auth_required
-def getUserContext(request):
-    if "jwt_token" in request.session:
-        jwt_token = request.session["jwt_token"]
-        try:
-            user = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms=["HS256"])
-            request.session["user"] = user
-            return user
-            # Do something with the email
-        except jwt.DecodeError:
-            # Handle invalid token
-            pass
-    else:
-        # Handle case when jwt_token is not present in session
-        pass
-
-
-@session_auth_required
 def dashboard(request):
     userContext = getUserContext(request)
     userEmail = {"email": userContext["email"]}
     headers = {"Content-Type": "application/json"}  # Specify JSON content type
-
     response = requests.get(f"{url}/dash", data=json.dumps(userEmail), headers=headers)
     _data = response.json()
     if "error" in _data:
         return render(
             request,
             "private/dashboard.html",
-            {"error": f"No existe ningun dashboard", "user": userContext["first_name"]},
+            {
+                "error": f"No existe ningun dashboard",
+                "user": userContext["first_name"],
+            },
         )
     else:
         dashboards = [
@@ -430,13 +439,30 @@ def dashboard(request):
                 "chart_4div": chart_4(),
             },
         ]
-
+        table = []
+        if request.method == "POST":
+            dshId = request.POST.get("dshid")
+            target = request.POST.get("search")
+            userContext = getUserContext(request)
+            search = {"owner": userContext["email"], "dsh": dshId, "target": target}
+            headers = {"Content-Type": "application/json"}  # Specify JSON content type
+            response = requests.get(
+                f"{url}/dash/search", data=json.dumps(search), headers=headers
+            )
+            _data = response.json()
+            if _data["table"]:
+                print("entro table")
+                table = _data["table"]
+            else:
+                print("entro error")
+                table = _data["error"]
         return render(
             request,
             "private/dashboard.html",
             {
                 "dashboards": dashboards,
                 "user": userContext["first_name"],
+                "table": table,
             },
         )
 

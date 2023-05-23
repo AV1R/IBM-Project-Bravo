@@ -31,7 +31,7 @@
       <div class="row m-5">
         <div class="bx--grid col-xl-6 col-sm-12 col-md-12 p-0 text-start ">
             <div class="bx--row">
-                <div class="bx--col-lg-16">
+                <div class="bx--col-lg-16 ">
                     <h1 class="bx--type-beta">Certification Bar Chart</h1>
                     {{ dsh.chart_1div|safe }}
                 </div>
@@ -63,7 +63,147 @@
                     {{ dsh.chart_4div|safe }}
                 </div>
             </div>
-          </div>        
+          </div>   
+            
+          {% comment %} Search here! {% endcomment %}
+       
+
+         <form method="POST" class="bx--form-control bx--form-control-dark">
+            {% csrf_token %}
+            <div class="bx--form-control bx--form-control-dark">
+              <div class="bx--row">
+                <div class="bx--col-10">
+                  <input class="bx--text-input bx--text-input--light" name="search" type="text" placeholder="Search" aria-label="Search" />
+                </div>
+                <div class="bx--col-2">
+                  <button role="button" type="submit" name="dshid" class="bx--btn bx--btn--primary bx--btn--field" value="{{dsh.id}}">Search</button>
+                </div>
+              </div>
+            </div>
+          </form>
+
+  
+          {% if table %}
+   
+  {% with first_table_item=table|first %}
+    {% if first_table_item.error %}
+      <div class="alert alert-danger" role="alert">{{ table.error }}</div>
+    {% endif %}
+    {% if first_table_item.type %}
+      <div class="bx--data-table-container">
+        <table class="bx--data-table bx--data-table--zebra">
+          <thead>
+            <tr>
+              <th>Certification</th>
+              <th>Date</th>
+              <th>Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in table %}
+              <tr>
+                <td>{{ row.certification }}</td>
+                <td>{{ row.issue_date }}</td>
+                <td>{{ row.type }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+    {% if first_table_item.org %}
+      <div class="bx--data-table-container">
+        <table class="bx--data-table bx--data-table--zebra">
+          <thead>
+            <tr>
+              <th>UID</th>
+              <th>Certification</th>
+              <th>Organization</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in table %}
+              <tr>
+                <td>{{ row.uid }}</td>
+                <td>{{ row.certification }}</td>
+                <td>{{ row.org }}</td>
+                <td>{{ row.issue_date }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  {% endwith %}
+{% endif %}
+
+
+          {% comment %} {%if table%}
+          <div>
+            {%if table.type%}
+            <div class="bx--data-table-container">
+              <table class="bx--data-table bx--data-table--zebra">
+                <thead>
+                  <tr>
+                    <th>Certification</th>
+                    <th>Date</th>
+                    <th>Type</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>  
+            {%endif%}
+            {%if table.org%}
+            <div class="bx--data-table-container">
+              <table class="bx--data-table bx--data-table--zebra">
+                <thead>
+                  <tr>
+                    <th>UID</th>
+                    <th>Certification</th>
+                    <th>Organization</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>  
+            {%endif%}
+
+          {% for row in table %}
+            {% if row.type %}
+            <div class="bx--data-table-container">
+              <table class="bx--data-table bx--data-table--zebra">
+                <tbody>
+                  <tr>
+                    <td>{{row.certification}}</td>
+                    <td>{{row.issue_date}}</td>
+                    <td>{{row.type}}</td>
+                  </tr>  
+                </tbody>
+              </table>
+            </div>
+            {%endif%}
+            {% if row.org %}
+            <div class="bx--data-table-container">
+              <table class="bx--data-table bx--data-table--zebra">
+                <tbody>
+                  <tr>
+                    <td>{{row.uid}}</td>
+                    <td>{{row.certification}}</td>
+                    <td>{{row.org}}</td>
+                    <td>{{row.issue_date}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {%endif%}
+          {%endfor%}
+          </div>
+          {% endif%}
+         {% endcomment %}
+        
+
         {% comment %} Table {% endcomment %}
        <div class="col-4">
         <table class="mt-5 mb-5">

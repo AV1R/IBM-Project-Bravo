@@ -8,6 +8,7 @@ import jwt
 from functools import wraps
 from datetime import datetime, timedelta
 import json
+import re
 
 load_dotenv()  # load environment variables from .env file
 mongo_connection_string = os.getenv("MONGO_CONNECTION_STRING")
@@ -161,6 +162,88 @@ def dashboardApi():
         response.headers["X-My-Header"] = "My custom header value"
         response.status_code = 200
         return response
+    except Exception:
+        data = {"status": "error"}
+        response = make_response(obj)
+        response.headers["Content-Type"] = "application/json"
+        response.status_code = 500
+        return response
+
+
+# endpoint for frontend
+@app.route("/dash/search/")
+def dashboardSearch():
+    reqUser = request.get_json()
+    owner = reqUser["owner"]
+    dashId = reqUser["dsh"]
+    target = reqUser["target"]
+    print(dashId, target)
+    try:
+        cert = list(
+            dash.find(
+                {
+                    "$and": [
+                        {"owner": owner},
+                        {"dsh": int(dashId)},
+                        {"certification": {"$regex": target, "$options": "i"}},
+                    ]
+                },
+                {
+                    "uid": 1,
+                    "certification": 1,
+                    "org": 1,
+                    "issue_date": 1,
+                },
+            )
+        )
+
+        empl = list(
+            dash.find(
+                {
+                    "$and": [
+                        {"owner": owner},
+                        {"dsh": int(dashId)},
+                        {"uid": target},
+                    ]
+                },
+                {
+                    "certification": 1,
+                    "issue_date": 1,
+                    "type": 1,
+                },
+            )
+        )
+
+        if not cert and not empl:
+            return jsonify({"error": "No certificates found"}), 404
+
+        if cert:
+            data = cert
+            for item in data:
+                item["_id"] = str(item["_id"])
+            # convert data list to JSON string
+            data = {"table": data}
+            obj = jsonify(data)  # convert data list to JSON string
+            response = make_response(obj)
+            response.headers["Content-Type"] = "application/json"
+            response.headers["X-My-Header"] = "My custom header value"
+            response.status_code = 200
+            return response
+        elif empl:
+            data = empl
+            for item in data:
+                item["_id"] = str(item["_id"])
+            # convert data list to JSON string
+            data = {"table": data}
+            obj = jsonify(data)  # convert data list to JSON string
+            response = make_response(obj)
+            response.headers["Content-Type"] = "application/json"
+            response.headers["X-My-Header"] = "My custom header value"
+            response.status_code = 200
+            return response
+        else:
+            return jsonify({"error": "No certificates or employees found"}), 404
+
     except Exception:
         data = {"status": "error"}
         response = make_response(obj)
