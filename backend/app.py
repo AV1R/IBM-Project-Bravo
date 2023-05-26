@@ -85,7 +85,7 @@ def register():
                 "email": new_user["email"],
                 "first_name": new_user["first_name"],
                 "second_name": new_user["second_name"],
-                "exp": datetime.utcnow() + timedelta(minutes=60),
+                "exp": datetime.utcnow() + timedelta(minutes=999),
             },
             app.config["SECRET_KEY"],
         )
@@ -121,7 +121,7 @@ def login():
                     "email": existingUser["email"],
                     "first_name": existingUser["first_name"],
                     "second_name": existingUser["second_name"],
-                    "exp": datetime.utcnow() + timedelta(minutes=60),
+                    "exp": datetime.utcnow() + timedelta(minutes=999),
                 },
                 app.config["SECRET_KEY"],
             )

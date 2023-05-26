@@ -138,20 +138,22 @@ def chart_1():
             )
         ],
         layout=go.Layout(
+            title="Certification Bar Chart",
+            title_font=dict(color="#f4f4f4"),
             xaxis=dict(
-                title="Percentage", title_font=dict(color="white")
+                title="Percentage", title_font=dict(color="#c6c6c6")
             ),  # Set x-axis title text color to white
             yaxis=dict(
                 title="Certification",
-                title_font=dict(color="white"),
-                tickfont=dict(color="white"),
+                title_font=dict(color="#c6c6c6"),
+                tickfont=dict(color="#c6c6c6"),
             ),  # Set y-axis title and tick labels text color to white
-            plot_bgcolor="rgba(0, 0, 0, 0)",  # Transparent plot background
-            paper_bgcolor="rgba(0, 0, 0, 0)",  # Transparent paper background
+            plot_bgcolor="#21272a",  # Transparent plot background
+            paper_bgcolor="#21272a",  # Transparent paper background
         ),
     )
 
-    return fig.to_html(full_html=False, default_height=500, default_width=700)
+    return fig.to_html(full_html=False, config={"responsive": True})
 
 
 def chart_2():
@@ -174,18 +176,20 @@ def chart_2():
             )
         ],
         layout=go.Layout(
+            title="Department Distribution",
+            title_font=dict(color="#f4f4f4"),
             legend=dict(
                 orientation="h",
                 yanchor="bottom",
                 y=-0.2,
                 font=dict(color="white"),  # Set annotation text color to white
             ),  # Position the legend at the bottom
-            plot_bgcolor="rgba(0, 0, 0, 0)",  # Transparent plot background
-            paper_bgcolor="rgba(0, 0, 0, 0)",  # Transparent paper background
+            plot_bgcolor="#21272a",  # Transparent plot background
+            paper_bgcolor="#21272a",  # Transparent paper background
         ),
     )
 
-    return fig.to_html(full_html=False, default_height=500, default_width=700)
+    return fig.to_html(full_html=False, config={"responsive": True})
 
 
 def chart_3():
@@ -240,6 +244,8 @@ def chart_3():
         #    'text': 'Top 5 and Bottom 5 Values',
         #    'font': {'color': 'white'}  # Set title text color to white
         # },
+        title="Top 5 | Bottom 5",
+        title_font=dict(color="#f4f4f4"),
         xaxis={
             "title": "IDs",
             "title_font": {"color": "white"},  # Set x-axis title text color to white
@@ -254,11 +260,11 @@ def chart_3():
                 "color": "white"
             },  # Set y-axis tick labels text color to white
         },
-        plot_bgcolor="rgba(0, 0, 0, 0)",  # Transparent plot background
-        paper_bgcolor="rgba(0, 0, 0, 0)",  # Transparent paper background
+        plot_bgcolor="#21272a",  # Transparent plot background
+        paper_bgcolor="#21272a",  # Transparent paper background
     )
 
-    return fig.to_html(full_html=False, default_height=500, default_width=700)
+    return fig.to_html(full_html=False, config={"responsive": True})
 
 
 def chart_4():
@@ -325,6 +331,8 @@ def chart_4():
             )
         ],
         layout=go.Layout(
+            title="Certification Distribution",
+            title_font=dict(color="#f4f4f4"),
             legend=dict(
                 orientation="h",
                 yanchor="bottom",
@@ -358,12 +366,12 @@ def chart_4():
                     # activecolor="gray",  # Set active dropdown color to gray
                 )
             ],
-            plot_bgcolor="rgba(0, 0, 0, 0)",  # Transparent plot background
-            paper_bgcolor="rgba(0, 0, 0, 0)",  # Transparent paper background
+            plot_bgcolor="#21272a",  # Transparent plot background
+            paper_bgcolor="#21272a",  # Transparent paper background
         ),
     )
 
-    return fig.to_html(full_html=False, default_height=500, default_width=700)
+    return fig.to_html(full_html=False, config={"responsive": True})
 
 
 @session_auth_required

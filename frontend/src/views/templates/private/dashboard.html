@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<nav class="d-flex justify-content-between">
+<nav class="d-flex justify-content-between" style="margin-left:20px; margin-right:20px;">
   <h1>Dashboard</h1>
   <a class="bx--btn bx--btn--primary" href="{% url 'add' %}">Agregar</a>
 </nav>
@@ -15,7 +15,7 @@
 
 
 <!-- Nav pills -->
-<ul class="nav nav-pills">
+<ul class="nav nav-pills"  style="margin-left:20px; margin-right:20px;">
   {% for dsh in dashboards %}
     <li class="nav-item">
       <a class="bx--btn bx--btn--secondary {% if forloop.counter == 1 %}active {% endif %}" data-bs-toggle="pill" href="#dsh{{ dsh.id }}">{{ dsh.title }}</a>
@@ -24,42 +24,54 @@
 </ul>
 
 <!-- Tab panes -->
-<div class="tab-content mt-1" style="background-color: white;">
+<div class="tab-content mt-1" style="background-color: #121619; width:100% !important;"> 
   {% for dsh in dashboards %}
-    <div class="tab-pane container {% if forloop.counter == 1 %}show active{% endif %}" id="dsh{{ dsh.id }}">
+    <div class="tab-pane container {% if forloop.counter == 1 %}show active{% endif %}" id="dsh{{ dsh.id }}" style="background-color: #121619 !important;">
       {% comment %} Charts {% endcomment %}
       <div class="row m-5">
-        <div class="bx--grid col-xl-6 col-sm-12 col-md-12 p-0 text-start ">
-            <div class="bx--row">
-                <div class="bx--col-lg-16 ">
-                    <h1 class="bx--type-beta">Certification Bar Chart</h1>
+        <div class="bx--grid col-xl-12 col-sm-12 col-md-12 p-0 text-start ">
+            <div class="bx--row mt-5 mb-5" style="margin-right:0px; border-radius: 0px;
+            background: #1c1c1c;
+            box-shadow:  5px 5px 10px #181818,
+                         -5px -5px 10px #202020;">
+                <div class="bx--col-lg-16" style="width: 100%;">
+                    <h1 class="bx--type-beta"></h1>
                     {{ dsh.chart_1div|safe }}
                 </div>
             </div>
           </div>
         
-          <div class="bx--grid col-xl-6 col-sm-12 col-md-12  p-0 text-start">
-            <div class="bx--row">
-                <div class="bx--col-lg-16">
-                    <h1 class="bx--type-beta">Department Distribution</h1>
+          <div class="bx--grid col-xl-4 col-sm-12 col-md-12  p-0 text-start">
+            <div class="bx--row" style="margin-right:10px; border-radius: 0px;
+background: #1c1c1c;
+box-shadow:  5px 5px 10px #181818,
+             -5px -5px 10px #202020;">
+                <div class="bx--col-lg-16" style="width: 100%;">
+                    <h1 class="bx--type-beta"></h1>
                     {{ dsh.chart_2div|safe }}
                 </div>
             </div>
           </div>
         
-          <div class="bx--grid col-xl-6 col-sm-12 col-md-12  p-0 text-start">
-            <div class="bx--row">
-                <div class="bx--col-lg-16">
-                    <h1 class="bx--type-beta">Top 5 | Bottom 5</h1>
+          <div class="bx--grid col-xl-4 col-sm-12 col-md-12  p-0 text-start">
+            <div class="bx--row" style="margin-rigth:10px; border-radius: 0px;
+background: #1c1c1c;
+box-shadow:  5px 5px 10px #181818,
+             -5px -5px 10px #202020;">
+                <div class="bx--col-lg-16" style="width: 100%;">
+                    <h1 class="bx--type-beta"></h1>
                     {{ dsh.chart_3div|safe }}
                 </div>
             </div>
           </div>
         
-          <div class="bx--grid col-xl-6 col-sm-12 col-md-12  p-0 text-start">
-            <div class="bx--row">
-                <div class="bx--col-lg-16">
-                    <h1 class="bx--type-beta">Certification Distribution</h1>
+          <div class="bx--grid col-xl-4 col-sm-12 col-md-12  p-0 text-start">
+            <div class="bx--row" style="border-radius: 0px;
+background: #1c1c1c;
+box-shadow:  5px 5px 10px #181818,
+             -5px -5px 10px #202020;">
+                <div class="bx--col-lg-16" style="width: 100%;">
+                    <h1 class="bx--type-beta"></h1>
                     {{ dsh.chart_4div|safe }}
                 </div>
             </div>
@@ -67,76 +79,94 @@
             
           {% comment %} Search here! {% endcomment %}
        
-
-         <form method="POST" class="bx--form-control bx--form-control-dark">
-            {% csrf_token %}
-            <div class="bx--form-control bx--form-control-dark">
-              <div class="bx--row">
-                <div class="bx--col-10">
-                  <input class="bx--text-input bx--text-input--light" name="search" type="text" placeholder="Search" aria-label="Search" />
-                </div>
-                <div class="bx--col-2">
-                  <button role="button" type="submit" name="dshid" class="bx--btn bx--btn--primary bx--btn--field" value="{{dsh.id}}">Search</button>
+        
+          <div class="bx--tile bg-dark text-secondary px-4 py-5 text-center mt-5">
+            <div class="py-5">
+              <h1 class="display-5 fw-bold text-white">Search bar here!</h1>
+              <div class="col-lg-6 mx-auto">
+                <p class="fs-5 mb-4">Quickly design and customize responsive mobile-first sites.</p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                  <form method="POST" class="bx--form-control bx--form-control-dark">
+                    {% csrf_token %}
+                    <div class="bx--form-control bx--form-control-dark">
+                      <div class="bx--row">
+                        <div class="bx--col-10">
+                          <input class="bx--text-input bx--text-input--light" name="search" type="text" placeholder="Search" aria-label="Search" />
+                        </div>
+                        <div class="bx--col-2">
+                          <button role="button" type="submit" name="dshid" class="bx--btn bx--btn--primary bx--btn--field" value="{{dsh.id}}">Search</button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
-          </form>
 
-  
-          {% if table %}
+            {% if table %}
    
-  {% with first_table_item=table|first %}
-    {% if first_table_item.error %}
-      <div class="alert alert-danger" role="alert">{{ table.error }}</div>
-    {% endif %}
-    {% if first_table_item.type %}
-      <div class="bx--data-table-container">
-        <table class="bx--data-table bx--data-table--zebra">
-          <thead>
-            <tr>
-              <th>Certification</th>
-              <th>Date</th>
-              <th>Type</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for row in table %}
-              <tr>
-                <td>{{ row.certification }}</td>
-                <td>{{ row.issue_date }}</td>
-                <td>{{ row.type }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% endif %}
-    {% if first_table_item.org %}
-      <div class="bx--data-table-container">
-        <table class="bx--data-table bx--data-table--zebra">
-          <thead>
-            <tr>
-              <th>UID</th>
-              <th>Certification</th>
-              <th>Organization</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for row in table %}
-              <tr>
-                <td>{{ row.uid }}</td>
-                <td>{{ row.certification }}</td>
-                <td>{{ row.org }}</td>
-                <td>{{ row.issue_date }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% endif %}
-  {% endwith %}
-{% endif %}
+            {% with first_table_item=table|first %}
+              {% if first_table_item.error %}
+                <div class="alert alert-danger" role="alert">{{ table.error }}</div>
+              {% endif %}
+              {% if first_table_item.type %}
+                <div class="bx--data-table-container">
+                  <table class="bx--data-table bx--data-table--zebra">
+                    <thead>
+                      <tr>
+                        <th>Certification</th>
+                        <th>Date</th>
+                        <th>Type</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for row in table %}
+                        <tr>
+                          <td>{{ row.certification }}</td>
+                          <td>{{ row.issue_date }}</td>
+                          <td>{{ row.type }}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              {% endif %}
+              {% if first_table_item.org %}
+                <div class="bx--data-table-container">
+                  <table class="bx--data-table bx--data-table--zebra">
+                    <thead>
+                      <tr>
+                        <th>UID</th>
+                        <th>Certification</th>
+                        <th>Organization</th>
+                        <th>Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for row in table %}
+                        <tr>
+                          <td>{{ row.uid }}</td>
+                          <td>{{ row.certification }}</td>
+                          <td>{{ row.org }}</td>
+                          <td>{{ row.issue_date }}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              {% endif %}
+            {% endwith %}
+          {% endif %}
+
+
+
+          </div>
+          
+          
+   
+    
+  
+          
 
 
           {% comment %} {%if table%}

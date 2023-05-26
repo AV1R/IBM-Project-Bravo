@@ -24,7 +24,6 @@
     </symbol>
   </svg> {% endcomment %}
   <body>
-    <div class="container">
       {% comment %} <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom ">
         <a href="{% url 'signup' %}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
         <svg class="bi m-1" width="80" height="32"><use xlink:href="#ibm"/></svg>
@@ -62,13 +61,22 @@
             {%endif%}
             </ul>
       </header>
-      <main  style="text-align: justify; padding-top: 8rem;">
-        {% block content %}
+    {% comment %} <div class="row">
+      <div class="col-1">
 
-        {% endblock %}
-    </main>
+      </div>
+      <div class="col-10"> {% endcomment %}
+        <main  style="text-align: justify; padding-top: 8rem;">
+          {% block content %}
+  
+          {% endblock %}
+      </main>
+      {% comment %} </div>
+      <div class="col-1">
+
+      </div>
+  </div> {% endcomment %}
     <footer class="pt-3 mt-4 text-muted border-top m-5 text-center">Bravo Development Team &copy; 2023</footer>
-    </div>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.2.1/chart.min.js" integrity="sha512-v3ygConQmvH0QehvQa6gSvTE2VdBZ6wkLOlmK7Mcy2mZ0ZF9saNbbk19QeaoTHdWIEiTlWmrwAL4hS8ElnGFbA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
