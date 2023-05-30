@@ -9,6 +9,9 @@ from functools import wraps
 from datetime import datetime, timedelta
 import json
 import re
+import csv
+import itertools
+import io
 
 load_dotenv()  # load environment variables from .env file
 mongo_connection_string = os.getenv("MONGO_CONNECTION_STRING")
@@ -35,6 +38,8 @@ dash = db2.certificates
 # Get users collection
 users = db2.users
 # end
+
+collection = db2.csv_test # Variable for upload csv function (set to db2.csv_test for testing | set to db2.certificates for production)
 
 
 def token_required(f):
@@ -126,7 +131,7 @@ def login():
                 app.config["SECRET_KEY"],
             )
             response = {
-                "token": token.decode("utf-8")
+                "token": token
             }  # Assuming `token` is the bytes object
             return json.dumps(response), 200, {"Content-Type": "application/json"}
 
@@ -251,6 +256,125 @@ def dashboardSearch():
         response.status_code = 500
         return response
 
+def check_row_existence(owner,dsh):
+    # Create a query to find the document
+    query = {'owner': owner, 'dsh': dsh}
+
+    # Check if a document matching the query exists
+    result = collection.find_one(query)
+
+    if result:
+        return dsh
+    else:
+        return 0
+
+@app.route('/upload', methods=['GET','POST'])
+def upload_csv():
+    userEmail = request.form['email']
+    
+    if request.method == 'POST':
+        # Check if the 'file' field is present in the request
+        if 'file' not in request.files:
+            error_message = 'No file found'
+            return render_template('add.html', error_message=error_message)
+        
+        file = request.files['file']
+    
+        try:
+            if check_row_existence(userEmail,1) == 0:
+                # Wrap the file object in text mode
+                file_wrapper = io.TextIOWrapper(file, encoding='utf-8')
+
+                # Open the CSV file with the wrapped file object
+                csv_reader = csv.DictReader(file_wrapper, delimiter=',')
+
+                # Batch insertion: Insert multiple rows in a single database operation
+                chunk_size = 20000  # Define the number of rows to process in each chunk
+                rows = []
+
+                for chunk in itertools.islice(csv_reader, chunk_size):
+                    # Add the additional fields to each row
+                    chunk['dsh'] = 1
+                    chunk['owner'] = userEmail
+
+                    rows.append(chunk)  # Append each row as a dictionary
+
+                collection.insert_many(rows)
+
+                return 'CSV file uploaded and imported to MongoDB'
+            
+            elif check_row_existence(userEmail,3) == 3:
+                # Wrap the file object in text mode
+                file_wrapper = io.TextIOWrapper(file, encoding='utf-8')
+
+                # Open the CSV file with the wrapped file object
+                csv_reader = csv.DictReader(file_wrapper, delimiter=',')
+
+                collection.delete_many({'owner': userEmail,'dsh': 2})  # Replace 'parameter_field' with the actual field name
+                collection.update_many({'owner': userEmail,'dsh': 3}, {'$set': {'owner': userEmail,'dsh': 2}})
+
+                # Batch insertion: Insert multiple rows in a single database operation
+                chunk_size = 20000  # Define the number of rows to process in each chunk
+                rows = []
+
+                for chunk in itertools.islice(csv_reader, chunk_size):
+                    # Add the additional fields to each row
+                    chunk['dsh'] = 3
+                    chunk['owner'] = userEmail
+
+                    rows.append(chunk)  # Append each row as a dictionary
+
+                collection.insert_many(rows)
+
+                return 'CSV file uploaded and imported to MongoDB'
+            
+            elif check_row_existence(userEmail,2) == 2:
+                # Wrap the file object in text mode
+                file_wrapper = io.TextIOWrapper(file, encoding='utf-8')
+
+                # Open the CSV file with the wrapped file object
+                csv_reader = csv.DictReader(file_wrapper, delimiter=',')
+
+                # Batch insertion: Insert multiple rows in a single database operation
+                chunk_size = 20000  # Define the number of rows to process in each chunk
+                rows = []
+
+                for chunk in itertools.islice(csv_reader, chunk_size):
+                    # Add the additional fields to each row
+                    chunk['dsh'] = 3
+                    chunk['owner'] = userEmail
+
+                    rows.append(chunk)  # Append each row as a dictionary
+
+                collection.insert_many(rows)
+
+                return 'CSV file uploaded and imported to MongoDB'
+            
+            elif check_row_existence(userEmail,1) == 1:
+                # Wrap the file object in text mode
+                file_wrapper = io.TextIOWrapper(file, encoding='utf-8')
+
+                # Open the CSV file with the wrapped file object
+                csv_reader = csv.DictReader(file_wrapper, delimiter=',')
+
+                # Batch insertion: Insert multiple rows in a single database operation
+                chunk_size = 20000  # Define the number of rows to process in each chunk
+                rows = []
+
+                for chunk in itertools.islice(csv_reader, chunk_size):
+                    # Add the additional fields to each row
+                    chunk['dsh'] = 2
+                    chunk['owner'] = userEmail
+
+                    rows.append(chunk)  # Append each row as a dictionary
+
+                collection.insert_many(rows)
+
+                return 'CSV file uploaded and imported to MongoDB'
+
+        except Exception as e:
+            error_message = f'Error occurred during CSV file processing: {str(e)}'
+            return render_template('add.html', error_message=error_message)
 
 # endpoint for frontend
 # @app.route("/users")

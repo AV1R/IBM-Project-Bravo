@@ -398,6 +398,50 @@ def user_settings(request):
 
 @session_auth_required
 def add(request):
+    userContext = getUserContext(request)
+    if request.method == 'POST':
+        # Check if a file is present in the request
+        if 'file' not in request.FILES:
+            return render(
+                request,
+                "private/add.html",
+                {"error": "No se eligió un archivo"}
+            )
+
+        file = request.FILES['file']
+        email = userContext['email']
+
+        try:
+            # Create a dictionary payload
+            payload = {
+                'email': email
+            }
+
+            # Make a POST request to the backend endpoint
+            files = {'file': file}
+            response = requests.post(f"{url}/upload", data=payload, files=files)
+            print(response)
+
+            if response.status_code == 200:
+                return render(
+                request,
+                "private/add.html",
+                {"success": "Tus datos se han importado con éxito"}
+            )
+            else:
+                return render(
+                request,
+                "private/add.html",
+                {"error": "Ocurrió un error durante el procesamiento del archivo, asegurate de cumplir con el formato estándar y de utilizar un archivo .csv"}
+                )
+
+        except Exception as e:
+            return render(
+                request,
+                "private/add.html",
+                {"error": "Ocurrió un error durante la carga del archivo, asegurate de tener una conexión estable"}
+            )
+
     return render(request, "private/add.html")
 
 

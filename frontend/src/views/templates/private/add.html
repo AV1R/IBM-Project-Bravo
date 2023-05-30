@@ -1,7 +1,35 @@
 {% extends 'public/base.html' %}
 
 {% block content %}
-  <nav class="d-flex justify-content-between" style="margin-left:20px; margin-right:20px;">
-    <h1>Agregar</h1>
-  </nav>
+{% if error %}
+  <div class="alert alert-danger text-center" role="alert">{{ error }}</div>
+{% endif %}
+{% if success %}
+  <div class="alert alert-success text-center" role="alert">{{ success }}</div>
+{% endif %}
+<div class="p-4 p-md-5 mb-4 rounded card" style="background-color:#F4F4F4; border:black; border-width: 20px;">
+  <div class="row justify-content-between">
+    <div class="col-md-4">
+      <h1 class="display-4 fst-italic">Agregar dashboard</h1>
+      <p class="lead my-3">Aquí puedes subir los archivos con la información que quieras visualizar.</p>
+    </div>
+    <div class="col-6 mt-5">
+      <p class="my-2" style="font-size: 14px; color: #da1e28;">ATENCIÓN: Si ya cuenta con tres dashboards, su dashboard número 2 será eliminado</p>
+      <form method="post" enctype="multipart/form-data" style="color: #171414">
+        {% csrf_token %}  <!-- Include the CSRF token for security -->
+        <input type="file" name="file">
+        <input type="submit" value="Upload" class="bx--btn--field">
+        <p class="my-2" style="font-size: 14px; color: #736F6F;">Asegúrese de seguir el formato estándar de CSV</p>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+  <style>
+    
+    .bx--btn--field:hover{
+        background: #A6C8FF;  }
+    </style>
+
 {% endblock %}
