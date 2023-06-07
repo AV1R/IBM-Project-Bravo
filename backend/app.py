@@ -1,17 +1,25 @@
-from flask import Flask, render_template, request, url_for, redirect
-from flask import jsonify, make_response
-from pymongo import MongoClient
-from dotenv import load_dotenv
-import bcrypt
-import os
-import jwt
-from functools import wraps
-from datetime import datetime, timedelta
-import json
-import re
 import csv
-import itertools
 import io
+import itertools
+import json
+import os
+import re
+from datetime import datetime, timedelta
+from functools import wraps
+
+import bcrypt
+import jwt
+from dotenv import load_dotenv
+from flask import (
+    Flask,
+    jsonify,
+    make_response,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+from pymongo import MongoClient
 
 load_dotenv()  # load environment variables from .env file
 mongo_connection_string = os.getenv("MONGO_CONNECTION_STRING")
@@ -39,7 +47,9 @@ dash = db2.certificates
 users = db2.users
 # end
 
-collection = db2.csv_test # Variable for upload csv function (set to db2.csv_test for testing | set to db2.certificates for production)
+collection = (
+    db2.certificates
+)  # Variable for upload csv function (set to db2.csv_test for testing | set to db2.certificates for production)
 
 
 def token_required(f):
@@ -131,7 +141,7 @@ def login():
                 app.config["SECRET_KEY"],
             )
             response = {
-                "token": token
+                "token": token.decode("utf-8")
             }  # Assuming `token` is the bytes object
             return json.dumps(response), 200, {"Content-Type": "application/json"}
 
@@ -173,6 +183,265 @@ def dashboardApi():
         response.headers["Content-Type"] = "application/json"
         response.status_code = 500
         return response
+
+
+@app.route("/dash/chart4/")
+def dashboardChart4():
+    reqUser = request.get_json()
+    owner = reqUser["owner"]
+    dashId = reqUser["dsh"]
+    try:
+        result = dash.aggregate(
+            [
+                {"$match": {"owner": owner, "dsh": int(dashId)}},
+                {
+                    "$match": {
+                        "certification": {
+                            "$in": [
+                                "AWS Certified Cloud Practitioner",
+                                "Certified Cloud Security Professional (CCSP)",
+                                "Certified Data Privacy Solutions Engineer (CDPSE)",
+                                "Certified Data Professional (CDP)",
+                                "Certified Ethical Hacker (CEH)",
+                                "Certified Information Security Manager (CISM)",
+                                "Certified Information Systems Security Professional (CISSP)",
+                                "Cisco Certified Internetwork Expert (CCIE)",
+                                "Cisco Certified Network Professional (CCNP)",
+                                "CompTIA (A+, Cloud+, Security+)",
+                                "Microsoft Certified Azure Solutions Architect Expert",
+                                "Information Technology Infrastructure Library (ITIL)",
+                                "Oracle MySQL Database Administration",
+                                "Project Management Professional (PMP)",
+                                "Salesforce Certified Development Lifecycle and Deployment Designer",
+                            ]
+                        }
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": "$certification",
+                        "certifiedEmployees": {"$addToSet": "$uid"},
+                    }
+                },
+                {
+                    "$lookup": {
+                        "from": "certificates",
+                        "let": {"certification": "$_id"},
+                        "pipeline": [
+                            {
+                                "$group": {
+                                    "_id": None,
+                                    "totalEmployees": {"$addToSet": "$uid"},
+                                    "certifications": {"$push": "$$certification"},
+                                }
+                            }
+                        ],
+                        "as": "totalEmployees",
+                    }
+                },
+                {"$unwind": "$totalEmployees"},
+                {
+                    "$project": {
+                        "_id": 0,
+                        "certification": {
+                            "$cond": {
+                                "if": {"$ne": ["$_id", None]},
+                                "then": "$_id",
+                                "else": "Unknown",
+                            }
+                        },
+                        "totalEmployees": {"$size": "$totalEmployees.totalEmployees"},
+                        "certifiedEmployees": {"$size": "$certifiedEmployees"},
+                    }
+                },
+                {
+                    "$project": {
+                        "certification": 1,
+                        "totalEmployees": 1,
+                        "certifiedEmployees": 1,
+                        "percentage": {
+                            "$cond": {
+                                "if": {"$eq": ["$totalEmployees", 0]},
+                                "then": 0,
+                                "else": {
+                                    "$multiply": [
+                                        {
+                                            "$divide": [
+                                                "$certifiedEmployees",
+                                                "$totalEmployees",
+                                            ]
+                                        },
+                                        100,
+                                    ]
+                                },
+                            }
+                        },
+                    }
+                },
+                {"$sort": {"percentage": -1}},
+            ]
+        )
+        result_list = list(result)
+        print(result_list)
+
+        return jsonify(result_list)
+
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+
+@app.route("/dash/chart2/")
+def dashboardChart2():
+    reqUser = request.get_json()
+    owner = reqUser["owner"]
+    dashId = reqUser["dsh"]
+    try:
+        result = dash.aggregate(
+            [
+                {"$match": {"owner": owner, "dsh": int(dashId)}},
+                {"$group": {"_id": "$org", "totalEmployees": {"$addToSet": "$uid"}}},
+                {
+                    "$project": {
+                        "_id": 0,
+                        "org": "$_id",
+                        "totalEmployees": {"$size": "$totalEmployees"},
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": None,
+                        "orgs": {
+                            "$push": {
+                                "org": "$org",
+                                "totalEmployees": "$totalEmployees",
+                            }
+                        },
+                        "totalEmployees": {"$sum": "$totalEmployees"},
+                    }
+                },
+                {"$unwind": "$orgs"},
+                {
+                    "$project": {
+                        "_id": 0,
+                        "org": "$orgs.org",
+                        "percentage": {
+                            "$multiply": [
+                                {
+                                    "$divide": [
+                                        "$orgs.totalEmployees",
+                                        "$totalEmployees",
+                                    ]
+                                },
+                                100,
+                            ]
+                        },
+                    }
+                },
+                {"$sort": {"percentage": -1}},
+            ]
+        )
+        result_list = list(result)
+        print(result_list)
+
+        return jsonify(result_list)
+
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+
+@app.route("/dash/chart3/")
+def dashboardChart3():
+    reqUser = request.get_json()
+    owner = reqUser["owner"]
+    dashId = reqUser["dsh"]
+    try:
+        result = dash.aggregate(
+            [
+                {"$match": {"owner": owner, "dsh": int(dashId)}},
+                {
+                    "$match": {
+                        "certification": {
+                            "$in": [
+                                "AWS Certified Cloud Practitioner",
+                                "Certified Cloud Security Professional (CCSP)",
+                                "Certified Data Privacy Solutions Engineer (CDPSE)",
+                                "Certified Data Professional (CDP)",
+                                "Certified Ethical Hacker (CEH)",
+                                "Certified Information Security Manager (CISM)",
+                                "Certified Information Systems Security Professional (CISSP)",
+                                "Cisco Certified Internetwork Expert (CCIE)",
+                                "Cisco Certified Network Professional (CCNP)",
+                                "CompTIA (A+, Cloud+, Security+)",
+                                "Microsoft Certified Azure Solutions Architect Expert",
+                                "Information Technology Infrastructure Library (ITIL)",
+                                "Oracle MySQL Database Administration",
+                                "Project Management Professional (PMP)",
+                                "Salesforce Certified Development Lifecycle and Deployment Designer",
+                            ]
+                        }
+                    }
+                },
+                {"$group": {"_id": "$uid", "count": {"$sum": 1}}},
+                {"$sort": {"count": -1}},
+                {
+                    "$facet": {
+                        "top5": [{"$limit": 5}],
+                        "bottom5": [{"$sort": {"count": 1}}, {"$limit": 5}],
+                    }
+                },
+            ]
+        )
+        result_list = list(result)
+        print(result_list)
+
+        return jsonify(result_list)
+
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+
+@app.route("/dash/chart1/")
+def dashboardChart1():
+    reqUser = request.get_json()
+    owner = reqUser["owner"]
+    dashId = reqUser["dsh"]
+    try:
+        result = dash.aggregate(
+            [
+                {"$match": {"owner": owner, "dsh": int(dashId)}},
+                {"$group": {"_id": "$certification", "count": {"$sum": 1}}},
+                {
+                    "$match": {
+                        "_id": {
+                            "$in": [
+                                "AWS Certified Cloud Practitioner",
+                                "Certified Cloud Security Professional (CCSP)",
+                                "Certified Data Privacy Solutions Engineer (CDPSE)",
+                                "Certified Data Professional (CDP)",
+                                "Certified Ethical Hacker (CEH)",
+                                "Certified Information Security Manager (CISM)",
+                                "Certified Information Systems Security Professional (CISSP)",
+                                "Cisco Certified Internetwork Expert (CCIE)",
+                                "Cisco Certified Network Professional (CCNP)",
+                                "CompTIA (A+, Cloud+, Security+)",
+                                "Microsoft Certified Azure Solutions Architect Expert",
+                                "Information Technology Infrastructure Library (ITIL)",
+                                "Oracle MySQL Database Administration",
+                                "Project Management Professional (PMP)",
+                                "Salesforce Certified Development Lifecycle and Deployment Designer",
+                            ]
+                        }
+                    }
+                },
+            ]
+        )
+        result_list = list(result)
+        print(result_list)
+
+        return jsonify(result_list)
+
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 
 # endpoint for frontend
@@ -256,9 +525,10 @@ def dashboardSearch():
         response.status_code = 500
         return response
 
-def check_row_existence(owner,dsh):
+
+def check_row_existence(owner, dsh):
     # Create a query to find the document
-    query = {'owner': owner, 'dsh': dsh}
+    query = {"owner": owner, "dsh": dsh}
 
     # Check if a document matching the query exists
     result = collection.find_one(query)
@@ -268,25 +538,26 @@ def check_row_existence(owner,dsh):
     else:
         return 0
 
-@app.route('/upload', methods=['GET','POST'])
+
+@app.route("/upload", methods=["GET", "POST"])
 def upload_csv():
-    userEmail = request.form['email']
-    
-    if request.method == 'POST':
+    userEmail = request.form["email"]
+
+    if request.method == "POST":
         # Check if the 'file' field is present in the request
-        if 'file' not in request.files:
-            error_message = 'No file found'
-            return render_template('add.html', error_message=error_message)
-        
-        file = request.files['file']
-    
+        if "file" not in request.files:
+            error_message = "No file found"
+            return render_template("add.html", error_message=error_message)
+
+        file = request.files["file"]
+
         try:
-            if check_row_existence(userEmail,1) == 0:
+            if check_row_existence(userEmail, 1) == 0:
                 # Wrap the file object in text mode
-                file_wrapper = io.TextIOWrapper(file, encoding='utf-8')
+                file_wrapper = io.TextIOWrapper(file, encoding="utf-8")
 
                 # Open the CSV file with the wrapped file object
-                csv_reader = csv.DictReader(file_wrapper, delimiter=',')
+                csv_reader = csv.DictReader(file_wrapper, delimiter=",")
 
                 # Batch insertion: Insert multiple rows in a single database operation
                 chunk_size = 20000  # Define the number of rows to process in each chunk
@@ -294,24 +565,29 @@ def upload_csv():
 
                 for chunk in itertools.islice(csv_reader, chunk_size):
                     # Add the additional fields to each row
-                    chunk['dsh'] = 1
-                    chunk['owner'] = userEmail
+                    chunk["dsh"] = 1
+                    chunk["owner"] = userEmail
 
                     rows.append(chunk)  # Append each row as a dictionary
 
                 collection.insert_many(rows)
 
-                return 'CSV file uploaded and imported to MongoDB'
-            
-            elif check_row_existence(userEmail,3) == 3:
+                return "CSV file uploaded and imported to MongoDB"
+
+            elif check_row_existence(userEmail, 3) == 3:
                 # Wrap the file object in text mode
-                file_wrapper = io.TextIOWrapper(file, encoding='utf-8')
+                file_wrapper = io.TextIOWrapper(file, encoding="utf-8")
 
                 # Open the CSV file with the wrapped file object
-                csv_reader = csv.DictReader(file_wrapper, delimiter=',')
+                csv_reader = csv.DictReader(file_wrapper, delimiter=",")
 
-                collection.delete_many({'owner': userEmail,'dsh': 2})  # Replace 'parameter_field' with the actual field name
-                collection.update_many({'owner': userEmail,'dsh': 3}, {'$set': {'owner': userEmail,'dsh': 2}})
+                collection.delete_many(
+                    {"owner": userEmail, "dsh": 2}
+                )  # Replace 'parameter_field' with the actual field name
+                collection.update_many(
+                    {"owner": userEmail, "dsh": 3},
+                    {"$set": {"owner": userEmail, "dsh": 2}},
+                )
 
                 # Batch insertion: Insert multiple rows in a single database operation
                 chunk_size = 20000  # Define the number of rows to process in each chunk
@@ -319,21 +595,21 @@ def upload_csv():
 
                 for chunk in itertools.islice(csv_reader, chunk_size):
                     # Add the additional fields to each row
-                    chunk['dsh'] = 3
-                    chunk['owner'] = userEmail
+                    chunk["dsh"] = 3
+                    chunk["owner"] = userEmail
 
                     rows.append(chunk)  # Append each row as a dictionary
 
                 collection.insert_many(rows)
 
-                return 'CSV file uploaded and imported to MongoDB'
-            
-            elif check_row_existence(userEmail,2) == 2:
+                return "CSV file uploaded and imported to MongoDB"
+
+            elif check_row_existence(userEmail, 2) == 2:
                 # Wrap the file object in text mode
-                file_wrapper = io.TextIOWrapper(file, encoding='utf-8')
+                file_wrapper = io.TextIOWrapper(file, encoding="utf-8")
 
                 # Open the CSV file with the wrapped file object
-                csv_reader = csv.DictReader(file_wrapper, delimiter=',')
+                csv_reader = csv.DictReader(file_wrapper, delimiter=",")
 
                 # Batch insertion: Insert multiple rows in a single database operation
                 chunk_size = 20000  # Define the number of rows to process in each chunk
@@ -341,21 +617,21 @@ def upload_csv():
 
                 for chunk in itertools.islice(csv_reader, chunk_size):
                     # Add the additional fields to each row
-                    chunk['dsh'] = 3
-                    chunk['owner'] = userEmail
+                    chunk["dsh"] = 3
+                    chunk["owner"] = userEmail
 
                     rows.append(chunk)  # Append each row as a dictionary
 
                 collection.insert_many(rows)
 
-                return 'CSV file uploaded and imported to MongoDB'
-            
-            elif check_row_existence(userEmail,1) == 1:
+                return "CSV file uploaded and imported to MongoDB"
+
+            elif check_row_existence(userEmail, 1) == 1:
                 # Wrap the file object in text mode
-                file_wrapper = io.TextIOWrapper(file, encoding='utf-8')
+                file_wrapper = io.TextIOWrapper(file, encoding="utf-8")
 
                 # Open the CSV file with the wrapped file object
-                csv_reader = csv.DictReader(file_wrapper, delimiter=',')
+                csv_reader = csv.DictReader(file_wrapper, delimiter=",")
 
                 # Batch insertion: Insert multiple rows in a single database operation
                 chunk_size = 20000  # Define the number of rows to process in each chunk
@@ -363,18 +639,19 @@ def upload_csv():
 
                 for chunk in itertools.islice(csv_reader, chunk_size):
                     # Add the additional fields to each row
-                    chunk['dsh'] = 2
-                    chunk['owner'] = userEmail
+                    chunk["dsh"] = 2
+                    chunk["owner"] = userEmail
 
                     rows.append(chunk)  # Append each row as a dictionary
 
                 collection.insert_many(rows)
 
-                return 'CSV file uploaded and imported to MongoDB'
+                return "CSV file uploaded and imported to MongoDB"
 
         except Exception as e:
-            error_message = f'Error occurred during CSV file processing: {str(e)}'
-            return render_template('add.html', error_message=error_message)
+            error_message = f"Error occurred during CSV file processing: {str(e)}"
+            return render_template("add.html", error_message=error_message)
+
 
 # endpoint for frontend
 # @app.route("/users")

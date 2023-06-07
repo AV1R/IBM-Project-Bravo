@@ -1,10 +1,13 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
-import requests, json
-from .decorators import session_auth_required, session_auth_not_required
+import json
+
 import jwt
-from django.conf import settings
 import plotly.graph_objects as go
+import requests
+from django.conf import settings
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import redirect, render
+
+from .decorators import session_auth_not_required, session_auth_required
 
 # Decorator token
 
@@ -105,8 +108,8 @@ def signup(request):
     return render(request, "public/signup.html")
 
 
-def chart_1():
-    y_labels = [
+def chart_1(owner, dsh):
+    """y_labels = [
         "AWS Certified Cloud Practitioner",
         "Certified Cloud Security Professional (CCSP)",
         "Certified Data Privacy Solutions Engineer (CDPSE)",
@@ -123,255 +126,277 @@ def chart_1():
         "Project Management Professional (PMP)",
         "Salesforce Certified Development Lifecycle and Deployment Designer",
     ]
-    y_values = [73, 58, 82, 90, 45, 60, 79, 65, 72, 85, 92, 78, 86, 93, 68]
+    y_values = [73, 58, 82, 90, 45, 60, 79, 65, 72, 85, 92, 78, 86, 93, 68]"""
 
-    fig = go.Figure(
-        data=[
-            go.Bar(
-                x=y_values,
-                y=y_labels,
-                orientation="h",
-                marker=dict(color="#054ada"),  # IBM blue color
-                text=y_values,
-                textposition="auto",
-                textfont=dict(color="white"),  # Set text color to white
-            )
-        ],
-        layout=go.Layout(
-            title="Certification Bar Chart",
-            title_font=dict(color="#f4f4f4"),
-            xaxis=dict(
-                title="Percentage", title_font=dict(color="#c6c6c6")
-            ),  # Set x-axis title text color to white
-            yaxis=dict(
-                title="Certification",
-                title_font=dict(color="#c6c6c6"),
-                tickfont=dict(color="#c6c6c6"),
-            ),  # Set y-axis title and tick labels text color to white
-            plot_bgcolor="#21272a",  # Transparent plot background
-            paper_bgcolor="#21272a",  # Transparent paper background
-        ),
-    )
+    try:
+        match = {"owner": owner, "dsh": dsh}
+        headers = {"Content-Type": "application/json"}  # Specify JSON content type
+        response = requests.get(
+            f"{url}/dash/chart1", data=json.dumps(match), headers=headers
+        )
 
-    return fig.to_html(full_html=False, config={"responsive": True})
+        data = response.json()
+
+        y_labels = [entry["_id"] for entry in data]
+        y_values = [entry["count"] for entry in data]
+
+        fig = go.Figure(
+            data=[
+                go.Bar(
+                    x=y_values,
+                    y=y_labels,
+                    orientation="h",
+                    marker=dict(color="#054ada"),  # IBM blue color
+                    text=y_values,
+                    textposition="auto",
+                    textfont=dict(color="white"),  # Set text color to white
+                )
+            ],
+            layout=go.Layout(
+                title="Certification Bar Chart",
+                title_font=dict(color="#f4f4f4"),
+                xaxis=dict(
+                    title="Percentage", title_font=dict(color="#c6c6c6")
+                ),  # Set x-axis title text color to white
+                yaxis=dict(
+                    title="Certification",
+                    title_font=dict(color="#c6c6c6"),
+                    tickfont=dict(color="#c6c6c6"),
+                ),  # Set y-axis title and tick labels text color to white
+                plot_bgcolor="#21272a",  # Transparent plot background
+                paper_bgcolor="#21272a",  # Transparent paper background
+            ),
+        )
+
+        return fig.to_html(full_html=False, config={"responsive": True})
+    except requests.exceptions.RequestException as e:
+        # Exception handling code...
+        return str(e)
 
 
-def chart_2():
-    labels = [
+def chart_2(owner, dsh):
+    """labels = [
         "Finanace and operations",
         "Consulting",
         "Systems, Technology Lifecycles Services",
     ]
-    values = [40, 30, 30]  # Example distribution percentages
+    values = [40, 30, 30]  # Example distribution percentages"""
 
-    colors = ["#00008B", "#4169E1", "#00FFFF"]  # Dark blue, Royal blue, Cyan
-
-    fig = go.Figure(
-        data=[
-            go.Pie(
-                labels=labels,
-                values=values,
-                marker=dict(colors=colors),
-                hole=0.4,  # Inner hole size (0-1)
-            )
-        ],
-        layout=go.Layout(
-            title="Department Distribution",
-            title_font=dict(color="#f4f4f4"),
-            legend=dict(
-                orientation="h",
-                yanchor="bottom",
-                y=-0.2,
-                font=dict(color="white"),  # Set annotation text color to white
-            ),  # Position the legend at the bottom
-            plot_bgcolor="#21272a",  # Transparent plot background
-            paper_bgcolor="#21272a",  # Transparent paper background
-        ),
-    )
-
-    return fig.to_html(full_html=False, config={"responsive": True})
-
-
-def chart_3():
-    """x_top = list(range(1, 6))  # IDs for top 5
-    y_top = [12, 10, 8, 6, 5]  # Values for top 5
-
-    x_bottom = list(range(6, 11))  # IDs for bottom 5
-    y_bottom = [3, 2, 2, 1, 0]  # Values for bottom 5
-
-    colors_top = ["#008000"] * 5  # Green bars
-    colors_bottom = ["#FF0000"] * 5  # Red bars
-
-    fig = go.Figure()
-    fig.add_trace(go.Bar(x=x_top, y=y_top, marker=dict(color=colors_top), name="Top 5"))
-    fig.add_trace(
-        go.Bar(
-            x=x_bottom, y=y_bottom, marker=dict(color=colors_bottom), name="Bottom 5"
+    try:
+        match = {"owner": owner, "dsh": dsh}
+        headers = {"Content-Type": "application/json"}  # Specify JSON content type
+        response = requests.get(
+            f"{url}/dash/chart2", data=json.dumps(match), headers=headers
         )
-    )
 
-    fig.update_layout(
-        xaxis=dict(title="ID"),
-        yaxis=dict(title="Value"),
-        barmode="group",  # Display bars side by side
-    )"""
+        data = response.json()
 
-    top_ids = list(range(1, 6))
+        labels = [entry["org"] for entry in data]
+        values = [entry["percentage"] for entry in data]
+
+        colors = ["#00008B", "#4169E1", "#00FFFF"]  # Dark blue, Royal blue, Cyan
+
+        fig = go.Figure(
+            data=[
+                go.Pie(
+                    labels=labels,
+                    values=values,
+                    marker=dict(colors=colors),
+                    hole=0.4,  # Inner hole size (0-1)
+                )
+            ],
+            layout=go.Layout(
+                title="Department Distribution",
+                title_font=dict(color="#f4f4f4"),
+                legend=dict(
+                    orientation="h",
+                    yanchor="bottom",
+                    y=-0.2,
+                    font=dict(color="white"),  # Set annotation text color to white
+                ),  # Position the legend at the bottom
+                plot_bgcolor="#21272a",  # Transparent plot background
+                paper_bgcolor="#21272a",  # Transparent paper background
+            ),
+        )
+
+        return fig.to_html(full_html=False, config={"responsive": True})
+    except requests.exceptions.RequestException as e:
+        # Exception handling code...
+        return str(e)
+
+
+def chart_3(owner, dsh):
+    """top_ids = list(range(1, 6))
     bottom_ids = list(range(6, 11))
 
     top_values = [12, 10, 8, 6, 5]  # Example values for the top 5
-    bottom_values = [3, 2, 2, 1, 0]  # Example values for the bottom 5
+    bottom_values = [3, 2, 2, 1, 0]  # Example values for the bottom 5"""
 
-    colors = ["#008000"] * 5 + ["#FF0000"] * 5  # Green for top 5, Red for bottom 5
+    try:
+        match = {"owner": owner, "dsh": dsh}
+        headers = {"Content-Type": "application/json"}  # Specify JSON content type
+        response = requests.get(
+            f"{url}/dash/chart3", data=json.dumps(match), headers=headers
+        )
 
-    fig = go.Figure(
-        data=[
-            go.Bar(
-                x=top_ids + bottom_ids,
-                y=top_values + bottom_values,
-                marker=dict(
-                    color=colors, line=dict(color="white", width=1)
-                ),  # Set bar colors and white line border
-                text=top_values + bottom_values,
-                textposition="auto",
-                textfont=dict(color="white"),  # Set text color to white
-            )
-        ]
-    )
+        data = response.json()
 
-    fig.update_layout(
-        # title={
-        #    'text': 'Top 5 and Bottom 5 Values',
-        #    'font': {'color': 'white'}  # Set title text color to white
-        # },
-        title="Top 5 | Bottom 5",
-        title_font=dict(color="#f4f4f4"),
-        xaxis={
-            "title": "IDs",
-            "title_font": {"color": "white"},  # Set x-axis title text color to white
-            "tickfont": {
-                "color": "white"
-            },  # Set x-axis tick labels text color to white
-        },
-        yaxis={
-            "title": "Values",
-            "title_font": {"color": "white"},  # Set y-axis title text color to white
-            "tickfont": {
-                "color": "white"
-            },  # Set y-axis tick labels text color to white
-        },
-        plot_bgcolor="#21272a",  # Transparent plot background
-        paper_bgcolor="#21272a",  # Transparent paper background
-    )
+        top_ids = [entry["_id"] for entry in data[0]["top5"]]
+        bottom_ids = [entry["_id"] for entry in data[0]["bottom5"]]
 
-    return fig.to_html(full_html=False, config={"responsive": True})
+        top_values = [entry["count"] for entry in data[0]["top5"]]
+        bottom_values = [entry["count"] for entry in data[0]["bottom5"]]
 
+        colors = ["#008000"] * 5 + ["#FF0000"] * 5  # Green for top 5, Red for bottom 5
 
-def chart_4():
-    certifications = [
-        "AWS Certified Cloud Practitioner",
-        "Certified Cloud Security Professional (CCSP)",
-        "Certified Data Privacy Solutions Engineer (CDPSE)",
-        "Certified Data Professional (CDP)",
-        "Certified Ethical Hacker (CEH)",
-        "Certified Information Security Manager (CISM)",
-        "Certified Information Systems Security Professional (CISSP)",
-        "Cisco Certified Internetwork Expert (CCIE)",
-        "Cisco Certified Network Professional (CCNP)",
-        "CompTIA (A+, Cloud+, Security+)",
-        "Microsoft Certified Azure Solutions Architect Expert",
-        "Information Technology Infrastructure Library (ITIL)",
-        "Oracle MySQL Database Administration",
-        "Project Management Professional (PMP)",
-    ]
-
-    percentages = {
-        "AWS Certified Cloud Practitioner": 80,
-        "Certified Cloud Security Professional (CCSP)": 65,
-        "Certified Data Privacy Solutions Engineer (CDPSE)": 45,
-        "Certified Data Professional (CDP)": 70,
-        "Certified Ethical Hacker (CEH)": 50,
-        "Certified Information Security Manager (CISM)": 75,
-        "Certified Information Systems Security Professional (CISSP)": 85,
-        "Cisco Certified Internetwork Expert (CCIE)": 30,
-        "Cisco Certified Network Professional (CCNP)": 55,
-        "CompTIA (A+, Cloud+, Security+)": 60,
-        "Microsoft Certified Azure Solutions Architect Expert": 90,
-        "Information Technology Infrastructure Library (ITIL)": 40,
-        "Oracle MySQL Database Administration": 75,
-        "Project Management Professional (PMP)": 70,
-    }
-
-    colors = [
-        "#054ada",  # IBM blue color
-        "#00BFFF",  # Deep sky blue
-        "#00FFFF",  # Cyan
-        "#008080",  # Teal
-        "#008000",  # Green
-        "#FF4500",  # Orange red
-        "#FF0000",  # Red
-        "#8B008B",  # Dark magenta
-        "#9400D3",  # Dark violet
-        "#800080",  # Purple
-        "#FFD700",  # Gold
-        "#A9A9A9",  # Dark gray
-        "#B22222",  # Fire brick
-        "#FFA500",  # Orange
-    ]
-
-    values = ["Certificado", "No certificado"]
-
-    fig = go.Figure(
-        data=[
-            go.Pie(
-                labels=values,
-                values=list(percentages.values()),
-                marker=dict(colors=colors),
-                hole=0.4,  # Inner hole size (0-1)
-            )
-        ],
-        layout=go.Layout(
-            title="Certification Distribution",
-            title_font=dict(color="#f4f4f4"),
-            legend=dict(
-                orientation="h",
-                yanchor="bottom",
-                y=-0.2,
-                font=dict(color="white"),  # Set annotation text color to white
-            ),  # Position the legend at the bottom
-            updatemenus=[
-                dict(
-                    buttons=[
-                        dict(
-                            label=cert,
-                            method="update",
-                            args=[
-                                {
-                                    "values": [
-                                        [percentages[cert], 100 - percentages[cert]]
-                                    ]
-                                }
-                            ],
-                        )
-                        for cert in certifications
-                    ],
-                    direction="down",
-                    showactive=False,
-                    x=0.5,
-                    xanchor="center",
-                    y=1.1,
-                    yanchor="top",
-                    bgcolor="black",  # Set dropdown background color to black
-                    font=dict(color="white"),  # Set dropdown text color to white
-                    # activecolor="gray",  # Set active dropdown color to gray
+        fig = go.Figure(
+            data=[
+                go.Bar(
+                    x=top_ids + bottom_ids,
+                    y=top_values + bottom_values,
+                    marker=dict(
+                        color=colors, line=dict(color="white", width=1)
+                    ),  # Set bar colors and white line border
+                    text=top_values + bottom_values,
+                    textposition="auto",
+                    textfont=dict(color="white"),  # Set text color to white
                 )
-            ],
+            ]
+        )
+
+        fig.update_layout(
+            # title={
+            #    'text': 'Top 5 and Bottom 5 Values',
+            #    'font': {'color': 'white'}  # Set title text color to white
+            # },
+            title="Top 5 | Bottom 5",
+            title_font=dict(color="#f4f4f4"),
+            xaxis={
+                "title": "IDs",
+                "title_font": {
+                    "color": "white"
+                },  # Set x-axis title text color to white
+                "tickfont": {
+                    "color": "white"
+                },  # Set x-axis tick labels text color to white
+            },
+            yaxis={
+                "title": "Values",
+                "title_font": {
+                    "color": "white"
+                },  # Set y-axis title text color to white
+                "tickfont": {
+                    "color": "white"
+                },  # Set y-axis tick labels text color to white
+            },
             plot_bgcolor="#21272a",  # Transparent plot background
             paper_bgcolor="#21272a",  # Transparent paper background
-        ),
-    )
+        )
 
-    return fig.to_html(full_html=False, config={"responsive": True})
+        return fig.to_html(full_html=False, config={"responsive": True})
+    except requests.exceptions.RequestException as e:
+        # Exception handling code...
+        return str(e)
+
+
+def chart_4(owner, dsh):
+    """userContext = getUserContext(request)
+    userEmail = {"email": userContext["email"]}
+    headers = {"Content-Type": "application/json"}"""
+
+    """userContext = getUserContext(request)
+    userEmail = {"email": userContext["email"]}
+    headers = {"Content-Type": "application/json"}  # Specify JSON content type
+    response = requests.get(f"{url}/dash/chart1", data=json.dumps(userEmail), headers=headers)"""
+
+    try:
+        """response = requests.get(
+            f"{url}/dash/chart1", data=json.dumps(user), headers=headers
+        )"""
+        match = {"owner": owner, "dsh": dsh}
+        headers = {"Content-Type": "application/json"}  # Specify JSON content type
+        response = requests.get(
+            f"{url}/dash/chart4", data=json.dumps(match), headers=headers
+        )
+
+        data = response.json()
+
+        certifications = [entry["certification"] for entry in data]
+        percentages = {entry["certification"]: entry["percentage"] for entry in data}
+
+        colors = [
+            "#054ada",  # IBM blue color
+            "#00BFFF",  # Deep sky blue
+            "#00FFFF",  # Cyan
+            "#008080",  # Teal
+            "#008000",  # Green
+            "#FF4500",  # Orange red
+            "#FF0000",  # Red
+            "#8B008B",  # Dark magenta
+            "#9400D3",  # Dark violet
+            "#800080",  # Purple
+            "#FFD700",  # Gold
+            "#A9A9A9",  # Dark gray
+            "#B22222",  # Fire brick
+            "#FFA500",  # Orange
+        ]
+
+        values = ["Certificado", "No certificado"]
+
+        fig = go.Figure(
+            data=[
+                go.Pie(
+                    labels=values,
+                    values=list(percentages.values()),
+                    marker=dict(colors=colors),
+                    hole=0.4,  # Inner hole size (0-1)
+                )
+            ],
+            layout=go.Layout(
+                title="Certification Distribution",
+                title_font=dict(color="#f4f4f4"),
+                legend=dict(
+                    orientation="h",
+                    yanchor="bottom",
+                    y=-0.2,
+                    font=dict(color="white"),  # Set annotation text color to white
+                ),  # Position the legend at the bottom
+                updatemenus=[
+                    dict(
+                        buttons=[
+                            dict(
+                                label=cert,
+                                method="update",
+                                args=[
+                                    {
+                                        "values": [
+                                            [percentages[cert], 100 - percentages[cert]]
+                                        ]
+                                    }
+                                ],
+                            )
+                            for cert in certifications
+                        ],
+                        direction="down",
+                        showactive=False,
+                        x=0.5,
+                        xanchor="center",
+                        y=1.1,
+                        yanchor="top",
+                        bgcolor="black",  # Set dropdown background color to black
+                        font=dict(color="white"),  # Set dropdown text color to white
+                        # activecolor="gray",  # Set active dropdown color to gray
+                    )
+                ],
+                plot_bgcolor="#21272a",  # Transparent plot background
+                paper_bgcolor="#21272a",  # Transparent paper background
+            ),
+        )
+
+        return fig.to_html(full_html=False, config={"responsive": True})
+    except requests.exceptions.RequestException as e:
+        # Exception handling code...
+        return str(e)
 
 
 @session_auth_required
@@ -399,47 +424,47 @@ def user_settings(request):
 @session_auth_required
 def add(request):
     userContext = getUserContext(request)
-    if request.method == 'POST':
+    if request.method == "POST":
         # Check if a file is present in the request
-        if 'file' not in request.FILES:
+        if "file" not in request.FILES:
             return render(
-                request,
-                "private/add.html",
-                {"error": "No se eligió un archivo"}
+                request, "private/add.html", {"error": "No se eligió un archivo"}
             )
 
-        file = request.FILES['file']
-        email = userContext['email']
+        file = request.FILES["file"]
+        email = userContext["email"]
 
         try:
             # Create a dictionary payload
-            payload = {
-                'email': email
-            }
+            payload = {"email": email}
 
             # Make a POST request to the backend endpoint
-            files = {'file': file}
+            files = {"file": file}
             response = requests.post(f"{url}/upload", data=payload, files=files)
             print(response)
 
             if response.status_code == 200:
                 return render(
-                request,
-                "private/add.html",
-                {"success": "Tus datos se han importado con éxito"}
-            )
+                    request,
+                    "private/add.html",
+                    {"success": "Tus datos se han importado con éxito"},
+                )
             else:
                 return render(
-                request,
-                "private/add.html",
-                {"error": "Ocurrió un error durante el procesamiento del archivo, asegurate de cumplir con el formato estándar y de utilizar un archivo .csv"}
+                    request,
+                    "private/add.html",
+                    {
+                        "error": "Ocurrió un error durante el procesamiento del archivo, asegurate de cumplir con el formato estándar y de utilizar un archivo .csv"
+                    },
                 )
 
         except Exception as e:
             return render(
                 request,
                 "private/add.html",
-                {"error": "Ocurrió un error durante la carga del archivo, asegurate de tener una conexión estable"}
+                {
+                    "error": "Ocurrió un error durante la carga del archivo, asegurate de tener una conexión estable"
+                },
             )
 
     return render(request, "private/add.html")
@@ -462,35 +487,84 @@ def dashboard(request):
             },
         )
     else:
-        dashboards = [
-            {
-                "id": 1,
-                "title": "DSH 1",
-                "data": _data["dashboard"][:10],
-                "chart_1div": chart_1(),
-                "chart_2div": chart_2(),
-                "chart_3div": chart_3(),
-                "chart_4div": chart_4(),
-            },
-            {
-                "id": 2,
-                "title": "DSH 2",
-                "data": _data["dashboard"][:5],
-                "chart_1div": chart_1(),
-                "chart_2div": chart_2(),
-                "chart_3div": chart_3(),
-                "chart_4div": chart_4(),
-            },
-            {
-                "id": 3,
-                "title": "DSH 3",
-                "data": _data["dashboard"][:2],
-                "chart_1div": chart_1(),
-                "chart_2div": chart_2(),
-                "chart_3div": chart_3(),
-                "chart_4div": chart_4(),
-            },
-        ]
+        data1 = []
+        data2 = []
+        data3 = []
+        for item in _data["dashboard"]:
+            if item["dsh"] == 1:
+                data1.append(item)
+            elif item["dsh"] == 2:
+                data2.append(item)
+            elif item["dsh"] == 3:
+                data3.append(item)
+
+        dashboards = []
+        if data1:
+            dashboards.append(
+                {
+                    "id": 1,
+                    "title": "DSH 1",
+                    "data": data1[:10],
+                    "chart_1div": chart_1(userContext["email"], 1),
+                    "chart_2div": chart_2(userContext["email"], 1),
+                    "chart_3div": chart_3(userContext["email"], 1),
+                    "chart_4div": chart_4(userContext["email"], 1),
+                }
+            )
+        if data2:
+            dashboards.append(
+                {
+                    "id": 2,
+                    "title": "DSH 2",
+                    "data": data2[:7],
+                    "chart_1div": chart_1(userContext["email"], 2),
+                    "chart_2div": chart_2(userContext["email"], 2),
+                    "chart_3div": chart_3(userContext["email"], 2),
+                    "chart_4div": chart_4(userContext["email"], 2),
+                }
+            )
+        if data3:
+            dashboards.append(
+                {
+                    "id": 3,
+                    "title": "DSH 3",
+                    "data": data3[:9],
+                    "chart_1div": chart_1(userContext["email"], 3),
+                    "chart_2div": chart_2(userContext["email"], 3),
+                    "chart_3div": chart_3(userContext["email"], 3),
+                    "chart_4div": chart_4(userContext["email"], 3),
+                }
+            )
+
+        # dashboards1 = [
+        #     {
+        #         "id": 1,
+        #         "title": "DSH 1",
+        #         "data": _data["dashboard"][:10],
+        #         "chart_1div": chart_1(),
+        #         "chart_2div": chart_2(),
+        #         "chart_3div": chart_3(),
+        #         "chart_4div": chart_4(),
+        #     },
+        #     {
+        #         "id": 2,
+        #         "title": "DSH 2",
+        #         "data": _data["dashboard"][:5],
+        #         "chart_1div": chart_1(),
+        #         "chart_2div": chart_2(),
+        #         "chart_3div": chart_3(),
+        #         "chart_4div": chart_4(),
+        #     },
+        #     {
+        #         "id": 3,
+        #         "title": "DSH 3",
+        #         "data": _data["dashboard"][:2],
+        #         "chart_1div": chart_1(),
+        #         "chart_2div": chart_2(),
+        #         "chart_3div": chart_3(),
+        #         "chart_4div": chart_4(),
+        #     },
+        # ]
         table = []
         if request.method == "POST":
             dshId = request.POST.get("dshid")
@@ -502,12 +576,14 @@ def dashboard(request):
                 f"{url}/dash/search", data=json.dumps(search), headers=headers
             )
             _data = response.json()
+
             if _data["table"]:
                 print("entro table")
                 table = _data["table"]
             else:
                 print("entro error")
                 table = _data["error"]
+
         return render(
             request,
             "private/dashboard.html",

@@ -2,10 +2,10 @@
 
 {% block content %}
 {% if error %}
-  <div class="alert alert-danger text-center" role="alert">{{ error }}</div>
+  <div id="error-alert" class="alert alert-danger text-center" role="alert">{{ error }}</div>
 {% endif %}
 {% if success %}
-  <div class="alert alert-success text-center" role="alert">{{ success }}</div>
+  <div id="success-alert" class="alert alert-success text-center" role="alert">{{ success }}</div>
 {% endif %}
 <div class="p-4 p-md-5 mb-4 rounded card" style="background-color:#F4F4F4; border:black; border-width: 20px;">
   <div class="row justify-content-between">
@@ -15,21 +15,57 @@
     </div>
     <div class="col-6 mt-5">
       <p class="my-2" style="font-size: 14px; color: #da1e28;">ATENCIÓN: Si ya cuenta con tres dashboards, su dashboard número 2 será eliminado</p>
-      <form method="post" enctype="multipart/form-data" style="color: #171414">
+      <form id="upload-form" method="post" enctype="multipart/form-data" style="color: #171414">
         {% csrf_token %}  <!-- Include the CSRF token for security -->
-        <input type="file" name="file">
-        <input type="submit" value="Upload" class="bx--btn--field">
+        <input type="file" name="file" id="file-input">
+        <input type="submit" value="Upload" class="bx--btn--field" id="upload-button">
         <p class="my-2" style="font-size: 14px; color: #736F6F;">Asegúrese de seguir el formato estándar de CSV</p>
       </form>
+      <div id="loading-indicator" class="d-none">
+        <!-- Loading indicator or progress bar HTML -->
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 
   <style>
-    
+
     .bx--btn--field:hover{
         background: #A6C8FF;  }
-    </style>
 
+      /* Style for the loading indicator */
+    #loading-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10px;
+  }
+  </style>
+
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Get the form, file input, and loading indicator elements
+      const uploadForm = document.getElementById("upload-form");
+      const fileInput = document.getElementById("file-input");
+      const loadingIndicator = document.getElementById("loading-indicator");
+      const successAlert = document.getElementById("success-alert");
+      const errorAlert = document.getElementById("error-alert");
+
+      // Add an event listener to the form submission
+      uploadForm.addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent the form from submitting normally
+
+        // Show the loading indicator
+        loadingIndicator.classList.remove("d-none");
+
+        // Submit the form
+        uploadForm.submit();
+        });
+    });
+  </script>
 {% endblock %}
