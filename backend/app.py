@@ -282,7 +282,7 @@ def dashboardChart4():
             ]
         )
         result_list = list(result)
-        print(result_list)
+        # print(result_list)
 
         return jsonify(result_list)
 
@@ -341,7 +341,7 @@ def dashboardChart2():
             ]
         )
         result_list = list(result)
-        print(result_list)
+        # print(result_list)
 
         return jsonify(result_list)
 
@@ -392,7 +392,7 @@ def dashboardChart3():
             ]
         )
         result_list = list(result)
-        print(result_list)
+        # print(result_list)
 
         return jsonify(result_list)
 
@@ -436,7 +436,7 @@ def dashboardChart1():
             ]
         )
         result_list = list(result)
-        print(result_list)
+        # print(result_list)
 
         return jsonify(result_list)
 
@@ -445,13 +445,13 @@ def dashboardChart1():
 
 
 # endpoint for frontend
-@app.route("/dash/search/")
+@app.route("/dash/search/", methods=["POST"])
 def dashboardSearch():
     reqUser = request.get_json()
     owner = reqUser["owner"]
     dashId = reqUser["dsh"]
     target = reqUser["target"]
-    print(dashId, target)
+    # print("searchBackend",dashId, target)
     try:
         cert = list(
             dash.find(

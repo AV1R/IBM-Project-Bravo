@@ -29,5 +29,5 @@ urlpatterns = [
     path("dashboard/", _views.dashboard, name="dashboard"),
     path("settings/", _views.user_settings, name="settings"),
     path("add/", _views.add, name="add"),
-    # path("search", _views.search, name="search"),
+    path("search/", _views.search, name="search"),
 ]

@@ -10,16 +10,16 @@
 <div class="p-4 p-md-5 mb-4 rounded card" style="background-color:#F4F4F4; border:black; border-width: 20px;">
   <div class="row justify-content-between">
     <div class="col-md-4">
-      <h1 class="display-4 fst-italic">Agregar dashboard</h1>
-      <p class="lead my-3">Aquí puedes subir los archivos con la información que quieras visualizar.</p>
+      <h1 class="display-4 fst-italic">Add dashboard</h1>
+      <p class="lead my-3">Here you can upload the files with the information you want to view.</p>
     </div>
     <div class="col-6 mt-5">
-      <p class="my-2" style="font-size: 14px; color: #da1e28;">ATENCIÓN: Si ya cuenta con tres dashboards, su dashboard número 2 será eliminado</p>
+      <p class="my-2" style="font-size: 14px; color: #da1e28;">WARNING: If you already have three dashboards, your dashboard number 2 will be deleted</p>
       <form id="upload-form" method="post" enctype="multipart/form-data" style="color: #171414">
         {% csrf_token %}  <!-- Include the CSRF token for security -->
         <input type="file" name="file" id="file-input">
         <input type="submit" value="Upload" class="bx--btn--field" id="upload-button">
-        <p class="my-2" style="font-size: 14px; color: #736F6F;">Asegúrese de seguir el formato estándar de CSV</p>
+        <p class="my-2" style="font-size: 14px; color: #736F6F;">Be sure to follow the standard CSV format</p>
       </form>
       <div id="loading-indicator" class="d-none">
         <!-- Loading indicator or progress bar HTML -->

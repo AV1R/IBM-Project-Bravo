@@ -4,7 +4,7 @@
 
 <nav class="d-flex justify-content-between" style="margin-left:20px; margin-right:20px;">
   <h1>Dashboard</h1>
-  <a class="bx--btn bx--btn--primary" href="{% url 'add' %}">Agregar</a>
+  <a class="bx--btn bx--btn--primary" href="{% url 'add' %}">Add</a>
 </nav>
 
   <hr />
@@ -26,263 +26,185 @@
 <!-- Tab panes -->
 <div class="tab-content mt-1" style="background-color: #121619; width:100% !important;"> 
   {% for dsh in dashboards %}
-    <div class="tab-pane container {% if forloop.counter == 1 %}show active{% endif %}" id="dsh{{ dsh.id }}" style="background-color: #121619 !important;">
+  {% comment %} tab {% endcomment %}
+  <div class="tab-pane container {% if forloop.counter == 1 %}show active{% endif %}" id="dsh{{ dsh.id }}" style="background-color: #121619 !important;">
       {% comment %} Charts {% endcomment %}
+      
+      {% comment %} ROW {% endcomment %}
       <div class="row m-5">
-        <div class="bx--grid col-xl-12 col-sm-12 col-md-12 p-0 text-start ">
-            <div class="bx--row mt-5 mb-5" style="margin-right:0px; border-radius: 0px;
-            background: #1c1c1c;
-            box-shadow:  5px 5px 10px #181818,
-                         -5px -5px 10px #202020;">
-                <div class="bx--col-lg-16" style="width: 100%;">
-                    <h1 class="bx--type-beta"></h1>
-                    {{ dsh.chart_1div|safe }}
-                </div>
+              {% comment %} Chart1 {% endcomment %}
+
+          <div class="bx--grid col-xl-12 col-sm-12 col-md-12 p-0 text-start ">
+              <div class="bx--row mt-5 mb-5" style="margin-right:-15px; border-radius: 0px;
+              background: #1c1c1c;
+              box-shadow:  5px 5px 10px #181818,
+                          -5px -5px 10px #202020;">
+                  <div class="bx--col-lg-16" style="width: 100%;">
+                      <h1 class="bx--type-beta"></h1>
+                      {{ dsh.chart_1div|safe }}
+                  </div>
+              </div>
             </div>
-          </div>
+              {% comment %} ENDChart1 {% endcomment %}
+            
+              {% comment %} Chart2 {% endcomment %}
         
           <div class="bx--grid col-xl-4 col-sm-12 col-md-12  p-0 text-start">
-            <div class="bx--row" style="margin-right:10px; border-radius: 0px;
-background: #1c1c1c;
-box-shadow:  5px 5px 10px #181818,
+            <div class="bx--row" style="margin-right:0px; border-radius: 0px;
+                  background: #1c1c1c;
+                box-shadow:  5px 5px 10px #181818,
              -5px -5px 10px #202020;">
                 <div class="bx--col-lg-16" style="width: 100%;">
                     <h1 class="bx--type-beta"></h1>
                     {{ dsh.chart_2div|safe }}
                 </div>
             </div>
-          </div>
+          </div>  
+              {% comment %} ENDChart2 {% endcomment %}
         
+              {% comment %} Chart3 {% endcomment %}
+
           <div class="bx--grid col-xl-4 col-sm-12 col-md-12  p-0 text-start">
-            <div class="bx--row" style="margin-rigth:10px; border-radius: 0px;
-background: #1c1c1c;
-box-shadow:  5px 5px 10px #181818,
-             -5px -5px 10px #202020;">
+            <div class="bx--row" style="margin-right:0px; border-radius: 0px;
+                    background: #1c1c1c;
+                    box-shadow:  5px 5px 10px #181818,
+                    -5px -5px 10px #202020;">
                 <div class="bx--col-lg-16" style="width: 100%;">
                     <h1 class="bx--type-beta"></h1>
                     {{ dsh.chart_3div|safe }}
                 </div>
             </div>
           </div>
+              {% comment %} ENDChart3 {% endcomment %}
         
+              {% comment %} Chart4 {% endcomment %}
+
           <div class="bx--grid col-xl-4 col-sm-12 col-md-12  p-0 text-start">
             <div class="bx--row" style="border-radius: 0px;
-background: #1c1c1c;
-box-shadow:  5px 5px 10px #181818,
-             -5px -5px 10px #202020;">
+                background: #1c1c1c;
+                box-shadow:  5px 5px 10px #181818,
+                -5px -5px 10px #202020;">
                 <div class="bx--col-lg-16" style="width: 100%;">
                     <h1 class="bx--type-beta"></h1>
                     {{ dsh.chart_4div|safe }}
                 </div>
             </div>
           </div>   
-            
-          {% comment %} Search here! {% endcomment %}
-       
-        
-          <div class="bx--tile bg-dark text-secondary px-4 py-5 text-center mt-5">
-            <div class="py-5">
-              <h1 class="display-5 fw-bold text-white">Search bar here!</h1>
-              <div class="col-lg-6 mx-auto">
-                <p class="fs-5 mb-4">Quickly design and customize responsive mobile-first sites.</p>
-                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                  <form method="POST" class="bx--form-control bx--form-control-dark">
-                    {% csrf_token %}
-                    <div class="bx--form-control bx--form-control-dark">
-                      <div class="bx--row">
-                        <div class="bx--col-10">
-                          <input class="bx--text-input bx--text-input--light" name="search" type="text" placeholder="Search" aria-label="Search" />
-                        </div>
-                        <div class="bx--col-2">
-                          <button role="button" type="submit" name="dshid" class="bx--btn bx--btn--primary bx--btn--field" value="{{dsh.id}}">Search</button>
+              {% comment %} ENDChart4 {% endcomment %}
+              
+            {% comment %} Search here! {% endcomment %}
+            <div class="bx--tile bg-dark text-secondary px-4 py-5 text-center mt-5" style="margin-bottom: 50px; width: 120%;">
+              <div class="py-5">
+                <h1 class="display-5 fw-bold text-white">Search</h1>
+                <div class="col-lg-6 mx-auto">
+                  <p class="fs-5 mb-4">Search by Certification name or UID</p>
+                  <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    {% csrf_token %}  <!-- Include the CSRF token for security -->
+                    <form method="" class="bx--form-control bx--form-control-dark" id="search-form">
+                      <div class="bx--form-control bx--form-control-dark">
+                        <div class="bx--row">
+                          <div class="bx--col-10">
+                            <input class="bx--text-input bx--text-input--light" name="search" type="text" placeholder="e.g. IBM Certified" aria-label="Search" />
+                          </div>
+                          <div class="bx--col-2">
+                              <button  role="button" type="button" class="bx--btn bx--btn--primary bx--btn--field search-button" data-dsh="{{dsh.id}}">Search</button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </form>
+                    </form>
+                  </div>
                 </div>
+                {% comment %} {% for dsh in dashboards %} {% endcomment %}
+                  <div id="search-results-{{dsh.id}}" ></div>
+                {% comment %} {% endfor %} {% endcomment %}
               </div>
-            </div>
-
-            {% if table %}
-   
-            {% with first_table_item=table|first %}
-              {% if first_table_item.error %}
-                <div class="alert alert-danger" role="alert">{{ table.error }}</div>
-              {% endif %}
-              {% if first_table_item.type %}
-                <div class="bx--data-table-container">
-                  <table class="bx--data-table bx--data-table--zebra">
-                    <thead>
-                      <tr>
-                        <th>Certification</th>
-                        <th>Date</th>
-                        <th>Type</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for row in table %}
-                        <tr>
-                          <td>{{ row.certification }}</td>
-                          <td>{{ row.issue_date }}</td>
-                          <td>{{ row.type }}</td>
-                        </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
-                </div>
-              {% endif %}
-              {% if first_table_item.org %}
-                <div class="bx--data-table-container">
-                  <table class="bx--data-table bx--data-table--zebra">
-                    <thead>
-                      <tr>
-                        <th>UID</th>
-                        <th>Certification</th>
-                        <th>Organization</th>
-                        <th>Date</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for row in table %}
-                        <tr>
-                          <td>{{ row.uid }}</td>
-                          <td>{{ row.certification }}</td>
-                          <td>{{ row.org }}</td>
-                          <td>{{ row.issue_date }}</td>
-                        </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
-                </div>
-              {% endif %}
-            {% endwith %}
-          {% endif %}
-
-
-
-          </div>
-          
-          
-   
-    
-  
-          
-
-
-          {% comment %} {%if table%}
-          <div>
-            {%if table.type%}
-            <div class="bx--data-table-container">
-              <table class="bx--data-table bx--data-table--zebra">
-                <thead>
-                  <tr>
-                    <th>Certification</th>
-                    <th>Date</th>
-                    <th>Type</th>
-                  </tr>
-                </thead>
-              </table>
-            </div>  
-            {%endif%}
-            {%if table.org%}
-            <div class="bx--data-table-container">
-              <table class="bx--data-table bx--data-table--zebra">
-                <thead>
-                  <tr>
-                    <th>UID</th>
-                    <th>Certification</th>
-                    <th>Organization</th>
-                    <th>Date</th>
-                  </tr>
-                </thead>
-              </table>
-            </div>  
-            {%endif%}
-
-          {% for row in table %}
-            {% if row.type %}
-            <div class="bx--data-table-container">
-              <table class="bx--data-table bx--data-table--zebra">
-                <tbody>
-                  <tr>
-                    <td>{{row.certification}}</td>
-                    <td>{{row.issue_date}}</td>
-                    <td>{{row.type}}</td>
-                  </tr>  
-                </tbody>
-              </table>
-            </div>
-            {%endif%}
-            {% if row.org %}
-            <div class="bx--data-table-container">
-              <table class="bx--data-table bx--data-table--zebra">
-                <tbody>
-                  <tr>
-                    <td>{{row.uid}}</td>
-                    <td>{{row.certification}}</td>
-                    <td>{{row.org}}</td>
-                    <td>{{row.issue_date}}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            {%endif%}
-          {%endfor%}
-          </div>
-          {% endif%}
-         {% endcomment %}
-        
-
-        {% comment %} Table {% endcomment %}
-       <div class="col-4">
-        <table class="mt-5 mb-5">
-          <thead>
-            <tr>
-              <th>UID</th>
-              <th>CERTIFICATION</th>
-              <th>LOCATION</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in dsh.data %}
-              <tr>
-                <td>{{ item.uid }}</td>
-                <td>{{ item.certification }}</td>
-                <td>{{ item.work_location }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div> 
+           </div>
+       </div>
+       {% comment %} endROW {% endcomment %}
     </div>
-    {% comment %} Settings {% endcomment %}
-    <div class="row m-5">
-      <div class="col-12">
-        <div class="mt-4 mb-4 p-5 ">
-          <h1>Información del dashboard</h1>
-          <div class="row">
-            <div class="col-4">
-              <div class="bx--file">
-                <input class="bx--file-input" type="file" id="file-upload" name="file-upload" accept=".csv">
-                <label for="file-upload" class="bx--btn bx--btn--primary">Actualizar</label>
-              </div>
-       
-            </div>
-            <div class="col-4">
-              <button type="button" class="bx--btn bx--btn--danger">Eliminar</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+  {% comment %} endtab {% endcomment %}
 
-
-
-    </div>
   {% endfor %}
 </div>
 
-
 </div>
+
+<script> 
+
+  // Get all search buttons
+  const searchButtons = document.querySelectorAll(".search-button");
+
+  // Attach event listener to each search button
+  searchButtons.forEach(button => {
+    button.addEventListener("click", search);
+  });
+  //document.querySelector("#searchButton").addEventListener("click", search);
+
+  // Handle search button click
+  async function search(event) {
+    event.preventDefault();
+    const button = event.target;
+    const dsh = button.getAttribute("data-dsh");
+    console.log("Search works! Owner and dsh: ", dsh);
+    console.log("target", document.querySelector("#search-form input[name='search']").value);
+    // Create the search payload
+    const payload = {
+      "dsh": dsh,
+      "target": document.querySelector("#search-form input[name='search']").value
+    };
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    try {
+      const response = await fetch("/search/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrftoken
+        },
+        body: JSON.stringify(payload)
+      });
+      console.log("After fetch")
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log("response ok")
+  
+        // Update the search results in the DOM
+        if (data.table && data.table.length > 0) {
+          let tableData = data.table;
+          let tableHtml = "";
+  
+          // Generate HTML for the table
+          if (tableData[0].type) {
+            // Table with "type" field
+            tableHtml += "<table class='bx--data-table bx--data-table--zebra'><thead><tr><th>Certification</th><th>Date</th><th>Type</th></tr></thead><tbody>";
+            for (let i = 0; i < tableData.length; i++) {
+              tableHtml += "<tr><td>" + tableData[i].certification + "</td><td>" + tableData[i].issue_date + "</td><td>" + tableData[i].type + "</td></tr>";
+            }
+            tableHtml += "</tbody></table>";
+          } else if (tableData[0].org) {
+            // Table with "org" field
+            tableHtml += "<table class='bx--data-table bx--data-table--zebra'><thead><tr><th>UID</th><th>Certification</th><th>Organization</th><th>Date</th></tr></thead><tbody>";
+            for (let i = 0; i < tableData.length; i++) {
+              tableHtml += "<tr><td>" + tableData[i].uid + "</td><td>" + tableData[i].certification + "</td><td>" + tableData[i].org + "</td><td>" + tableData[i].issue_date + "</td></tr>";
+            }
+            tableHtml += "</tbody></table>";
+          }
+  
+        document.getElementById(`search-results-${dsh}`).innerHTML = tableHtml;
+      } else {
+          console.log("no certificates")
+        document.getElementById(`search-results-${dsh}`).innerHTML = "<div class='alert alert-danger' role='alert'>No certificates or employees found</div>";
+        }
+      } else {
+        throw new Error("Error: " + response.status);
+      }
+    } catch (error) {
+      console.log("response failed")
+
+      console.error("Error: " + error);
+    }
+  }
+
+</script>
+
 {% endblock %}

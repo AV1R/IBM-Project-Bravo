@@ -17,25 +17,34 @@ port = 5000
 url = f"http://{localhost}:{port}"
 
 
-# @session_auth_required
-# def search(request):
-#     if request.method == "POST":
-#         dshId = request.POST.get("dshid")
-#         target = request.POST.get("search")
-#         userContext = getUserContext(request)
-#         search = {"owner": userContext["email"], "dsh": dshId, "target": target}
-#         headers = {"Content-Type": "application/json"}  # Specify JSON content type
-#         response = requests.get(
-#             f"{url}/dash/search", data=json.dumps(search), headers=headers
-#         )
-#         _data = response.json()
-#         print(_data)
-#         if _data:
-#             table = _data["table"]
-#             return JsonResponse({"table": table})  # Return the table content as JSON
+@session_auth_required
+def search(request):
+    if request.method == "POST":
+        print("on search python")
+        payload = json.loads(request.body)
+        dshId = payload.get("dsh")
+        target = payload.get("target")
+        userContext = getUserContext(request)
+        print(dshId,target,userContext['email'])
+        search = {"owner": userContext['email'], "dsh": dshId, "target": target}
+        headers = {"Content-Type": "application/json"}  # Specify JSON content type
+        response = requests.post(f"{url}/dash/search", data=json.dumps(search), headers=headers)
+        print(response.status_code)
+        if response.status_code==200:
+            print("on python response")
+            _data = response.json()
+            #print(_data)
+            if _data:
+                table = _data["table"]
+                return JsonResponse({"table": table})  # Return the table content as JSON
+        else:
+            print("entro except")
+            pass
+            
 
-#     # If no data is found or if the request method is not POST, return an empty JSON response
-#     return JsonResponse({})
+    # If no data is found or if the request method is not POST, return an empty JSON response
+    return JsonResponse({})
+
 
 
 @session_auth_not_required
@@ -109,25 +118,6 @@ def signup(request):
 
 
 def chart_1(owner, dsh):
-    """y_labels = [
-        "AWS Certified Cloud Practitioner",
-        "Certified Cloud Security Professional (CCSP)",
-        "Certified Data Privacy Solutions Engineer (CDPSE)",
-        "Certified Data Professional (CDP)",
-        "Certified Ethical Hacker (CEH)",
-        "Certified Information Security Manager (CISM)",
-        "Certified Information Systems Security Professional (CISSP)",
-        "Cisco Certified Internetwork Expert (CCIE)",
-        "Cisco Certified Network Professional (CCNP)",
-        "CompTIA (A+, Cloud+, Security+)",
-        "Microsoft Certified Azure Solutions Architect Expert",
-        "Information Technology Infrastructure Library (ITIL)",
-        "Oracle MySQL Database Administration",
-        "Project Management Professional (PMP)",
-        "Salesforce Certified Development Lifecycle and Deployment Designer",
-    ]
-    y_values = [73, 58, 82, 90, 45, 60, 79, 65, 72, 85, 92, 78, 86, 93, 68]"""
-
     try:
         match = {"owner": owner, "dsh": dsh}
         headers = {"Content-Type": "application/json"}  # Specify JSON content type
@@ -140,37 +130,67 @@ def chart_1(owner, dsh):
         y_labels = [entry["_id"] for entry in data]
         y_values = [entry["count"] for entry in data]
 
+        # Gradient of IBM blue colors
+        colors = ["#004144", 
+                  "#005d5d", 
+                  "#004144", 
+                  "#005d5d", 
+                  "#004144", 
+                  "#00539a", 
+                  "#003a6d", 
+                  "#00539a", 
+                  "#003a6d", 
+                  "#00539a", 
+                  "#002d9c", 
+                  "#0043ce", 
+                  "#002d9c",
+                  "#0043ce", 
+                  "#002d9c"]
+
         fig = go.Figure(
             data=[
                 go.Bar(
                     x=y_values,
                     y=y_labels,
                     orientation="h",
-                    marker=dict(color="#054ada"),  # IBM blue color
+                    marker=dict(color=colors, line=dict(color=colors)),
                     text=y_values,
                     textposition="auto",
-                    textfont=dict(color="white"),  # Set text color to white
+                    textfont=dict(color="white"),
                 )
             ],
             layout=go.Layout(
                 title="Certification Bar Chart",
                 title_font=dict(color="#f4f4f4"),
-                xaxis=dict(
-                    title="Percentage", title_font=dict(color="#c6c6c6")
-                ),  # Set x-axis title text color to white
+                #xaxis=dict(title="Percentage", title_font=dict(color="#c6c6c6")),
                 yaxis=dict(
-                    title="Certification",
-                    title_font=dict(color="#c6c6c6"),
-                    tickfont=dict(color="#c6c6c6"),
-                ),  # Set y-axis title and tick labels text color to white
-                plot_bgcolor="#21272a",  # Transparent plot background
-                paper_bgcolor="#21272a",  # Transparent paper background
+                    #title="Certification",
+                    #title_font=dict(color="#c6c6c6"),
+                    tickfont=dict(color="#c6c6c6", size=12),  # Set a smaller font size
+                    automargin=True
+                ),
+                plot_bgcolor="#21272a",
+                paper_bgcolor="#21272a",
+                margin=dict(l=200, r=25, t=60, b=50, pad=10)
             ),
+        )
+        fig.update_layout(
+            annotations=[
+                dict(
+                    xref="paper",
+                    yref="paper",
+                    x=-0.25,
+                    y=1.135,
+                    text="[i]",
+                    showarrow=False,
+                    hovertext="This chart displays the quantity of completed certifications for each of the ICO's Top 15 certifications.",
+                    hoverlabel=dict(bgcolor="#21272a", font=dict(color="white")),
+                )
+            ]
         )
 
         return fig.to_html(full_html=False, config={"responsive": True})
     except requests.exceptions.RequestException as e:
-        # Exception handling code...
         return str(e)
 
 
@@ -190,9 +210,17 @@ def chart_2(owner, dsh):
         )
 
         data = response.json()
-
-        labels = [entry["org"] for entry in data]
-        values = [entry["percentage"] for entry in data]
+        #print(data)
+        '''labels=[]
+        values=[]
+        for entry in data:
+            labels.append(entry["org"])
+            values.append(entry["percentage"])
+            print()'''
+        
+        
+        labels = [entry['org'] for entry in data]
+        values = [entry['percentage'] for entry in data]
 
         colors = ["#00008B", "#4169E1", "#00FFFF"]  # Dark blue, Royal blue, Cyan
 
@@ -216,7 +244,24 @@ def chart_2(owner, dsh):
                 ),  # Position the legend at the bottom
                 plot_bgcolor="#21272a",  # Transparent plot background
                 paper_bgcolor="#21272a",  # Transparent paper background
+                margin=dict(
+                    b=12,  # Add spacing on the bottom side
+                ),
             ),
+        )
+        fig.update_layout(
+            annotations=[
+                dict(
+                    xref="paper",
+                    yref="paper",
+                    x=0.73,
+                    y=1.24,
+                    text="[i]",
+                    showarrow=False,
+                    hovertext="Employee distribution across all organizations.",
+                    hoverlabel=dict(bgcolor="#21272a", font=dict(color="white")),
+                )
+            ]
         )
 
         return fig.to_html(full_html=False, config={"responsive": True})
@@ -247,7 +292,7 @@ def chart_3(owner, dsh):
         top_values = [entry["count"] for entry in data[0]["top5"]]
         bottom_values = [entry["count"] for entry in data[0]["bottom5"]]
 
-        colors = ["#008000"] * 5 + ["#FF0000"] * 5  # Green for top 5, Red for bottom 5
+        colors = ["#24a148"] * 5 + ["#fa4d56"] * 5  # Green for top 5, Red for bottom 5
 
         fig = go.Figure(
             data=[
@@ -255,7 +300,7 @@ def chart_3(owner, dsh):
                     x=top_ids + bottom_ids,
                     y=top_values + bottom_values,
                     marker=dict(
-                        color=colors, line=dict(color="white", width=1)
+                        color=colors, line=dict(color=colors, width=1)
                     ),  # Set bar colors and white line border
                     text=top_values + bottom_values,
                     textposition="auto",
@@ -281,7 +326,7 @@ def chart_3(owner, dsh):
                 },  # Set x-axis tick labels text color to white
             },
             yaxis={
-                "title": "Values",
+                "title": "",
                 "title_font": {
                     "color": "white"
                 },  # Set y-axis title text color to white
@@ -291,7 +336,22 @@ def chart_3(owner, dsh):
             },
             plot_bgcolor="#21272a",  # Transparent plot background
             paper_bgcolor="#21272a",  # Transparent paper background
+
+            annotations=[
+                dict(
+                    xref="paper",
+                    yref="paper",
+                    x=0.45,
+                    y=1.31,
+                    text="[i]",
+                    showarrow=False,
+                    hovertext="Top 5 and Bottom 5 places per quantity of certifications.",
+                    hoverlabel=dict(bgcolor="#21272a", font=dict(color="white")),
+                )
+            ]
         )
+    
+
 
         return fig.to_html(full_html=False, config={"responsive": True})
     except requests.exceptions.RequestException as e:
@@ -341,7 +401,7 @@ def chart_4(owner, dsh):
             "#FFA500",  # Orange
         ]
 
-        values = ["Certificado", "No certificado"]
+        values = ["Certified", "Not certified"]
 
         fig = go.Figure(
             data=[
@@ -383,13 +443,17 @@ def chart_4(owner, dsh):
                         xanchor="center",
                         y=1.1,
                         yanchor="top",
-                        bgcolor="black",  # Set dropdown background color to black
-                        font=dict(color="white"),  # Set dropdown text color to white
+                        bgcolor="#1c1c1c",  # Set dropdown background color to black
+                        font=dict(color="gray", size=10),  # Set dropdown text color to white
                         # activecolor="gray",  # Set active dropdown color to gray
-                    )
+                    )   
                 ],
                 plot_bgcolor="#21272a",  # Transparent plot background
                 paper_bgcolor="#21272a",  # Transparent paper background
+                margin=dict(
+                    t=80,  # Add spacing on the top side
+                    b=12,  # Add spacing on the bottom side
+                ),
             ),
         )
 
@@ -428,7 +492,7 @@ def add(request):
         # Check if a file is present in the request
         if "file" not in request.FILES:
             return render(
-                request, "private/add.html", {"error": "No se eligió un archivo"}
+                request, "private/add.html", {"error": "No file selected"}
             )
 
         file = request.FILES["file"]
@@ -441,20 +505,20 @@ def add(request):
             # Make a POST request to the backend endpoint
             files = {"file": file}
             response = requests.post(f"{url}/upload", data=payload, files=files)
-            print(response)
+            #print(response)
 
             if response.status_code == 200:
                 return render(
                     request,
                     "private/add.html",
-                    {"success": "Tus datos se han importado con éxito"},
+                    {"success": "Your data has been imported successfully"},
                 )
             else:
                 return render(
                     request,
                     "private/add.html",
                     {
-                        "error": "Ocurrió un error durante el procesamiento del archivo, asegurate de cumplir con el formato estándar y de utilizar un archivo .csv"
+                        "error": "An error occurred while processing the file, make sure you adhere to the standard format and use a .csv file"
                     },
                 )
 
@@ -463,7 +527,7 @@ def add(request):
                 request,
                 "private/add.html",
                 {
-                    "error": "Ocurrió un error durante la carga del archivo, asegurate de tener una conexión estable"
+                    "error": "An error occurred while uploading the file, make sure you have a stable connection"
                 },
             )
 
@@ -535,62 +599,13 @@ def dashboard(request):
                     "chart_4div": chart_4(userContext["email"], 3),
                 }
             )
-
-        # dashboards1 = [
-        #     {
-        #         "id": 1,
-        #         "title": "DSH 1",
-        #         "data": _data["dashboard"][:10],
-        #         "chart_1div": chart_1(),
-        #         "chart_2div": chart_2(),
-        #         "chart_3div": chart_3(),
-        #         "chart_4div": chart_4(),
-        #     },
-        #     {
-        #         "id": 2,
-        #         "title": "DSH 2",
-        #         "data": _data["dashboard"][:5],
-        #         "chart_1div": chart_1(),
-        #         "chart_2div": chart_2(),
-        #         "chart_3div": chart_3(),
-        #         "chart_4div": chart_4(),
-        #     },
-        #     {
-        #         "id": 3,
-        #         "title": "DSH 3",
-        #         "data": _data["dashboard"][:2],
-        #         "chart_1div": chart_1(),
-        #         "chart_2div": chart_2(),
-        #         "chart_3div": chart_3(),
-        #         "chart_4div": chart_4(),
-        #     },
-        # ]
-        table = []
-        if request.method == "POST":
-            dshId = request.POST.get("dshid")
-            target = request.POST.get("search")
-            userContext = getUserContext(request)
-            search = {"owner": userContext["email"], "dsh": dshId, "target": target}
-            headers = {"Content-Type": "application/json"}  # Specify JSON content type
-            response = requests.get(
-                f"{url}/dash/search", data=json.dumps(search), headers=headers
-            )
-            _data = response.json()
-
-            if _data["table"]:
-                print("entro table")
-                table = _data["table"]
-            else:
-                print("entro error")
-                table = _data["error"]
+    
 
         return render(
             request,
             "private/dashboard.html",
             {
                 "dashboards": dashboards,
-                "user": userContext["first_name"],
-                "table": table,
             },
         )
 
