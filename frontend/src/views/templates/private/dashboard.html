@@ -24,12 +24,12 @@
 </ul>
 
 <!-- Tab panes -->
-<div class="tab-content mt-1" style="background-color: #121619; width:100% !important;"> 
+<div class="tab-content mt-1" style="background-color: #121619; width:100% !important;">
   {% for dsh in dashboards %}
   {% comment %} tab {% endcomment %}
   <div class="tab-pane container {% if forloop.counter == 1 %}show active{% endif %}" id="dsh{{ dsh.id }}" style="background-color: #121619 !important;">
       {% comment %} Charts {% endcomment %}
-      
+
       {% comment %} ROW {% endcomment %}
       <div class="row m-5">
               {% comment %} Chart1 {% endcomment %}
@@ -46,9 +46,9 @@
               </div>
             </div>
               {% comment %} ENDChart1 {% endcomment %}
-            
+
               {% comment %} Chart2 {% endcomment %}
-        
+
           <div class="bx--grid col-xl-4 col-sm-12 col-md-12  p-0 text-start">
             <div class="bx--row" style="margin-right:0px; border-radius: 0px;
                   background: #1c1c1c;
@@ -59,9 +59,9 @@
                     {{ dsh.chart_2div|safe }}
                 </div>
             </div>
-          </div>  
+          </div>
               {% comment %} ENDChart2 {% endcomment %}
-        
+
               {% comment %} Chart3 {% endcomment %}
 
           <div class="bx--grid col-xl-4 col-sm-12 col-md-12  p-0 text-start">
@@ -76,7 +76,7 @@
             </div>
           </div>
               {% comment %} ENDChart3 {% endcomment %}
-        
+
               {% comment %} Chart4 {% endcomment %}
 
           <div class="bx--grid col-xl-4 col-sm-12 col-md-12  p-0 text-start">
@@ -89,9 +89,9 @@
                     {{ dsh.chart_4div|safe }}
                 </div>
             </div>
-          </div>   
+          </div>
               {% comment %} ENDChart4 {% endcomment %}
-              
+
             {% comment %} Search here! {% endcomment %}
             <div class="bx--tile bg-dark text-secondary px-4 py-5 text-center mt-5" style="margin-bottom: 50px; width: 120%;">
               <div class="py-5">
@@ -129,7 +129,7 @@
 
 </div>
 
-<script> 
+<script>
 
   // Get all search buttons
   const searchButtons = document.querySelectorAll(".search-button");
@@ -163,16 +163,16 @@
         body: JSON.stringify(payload)
       });
       console.log("After fetch")
-  
+
       if (response.ok) {
         const data = await response.json();
         console.log("response ok")
-  
+
         // Update the search results in the DOM
         if (data.table && data.table.length > 0) {
           let tableData = data.table;
           let tableHtml = "";
-  
+
           // Generate HTML for the table
           if (tableData[0].type) {
             // Table with "type" field
@@ -189,7 +189,7 @@
             }
             tableHtml += "</tbody></table>";
           }
-  
+
         document.getElementById(`search-results-${dsh}`).innerHTML = tableHtml;
       } else {
           console.log("no certificates")

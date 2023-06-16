@@ -25,26 +25,28 @@ def search(request):
         dshId = payload.get("dsh")
         target = payload.get("target")
         userContext = getUserContext(request)
-        print(dshId,target,userContext['email'])
-        search = {"owner": userContext['email'], "dsh": dshId, "target": target}
+        print(dshId, target, userContext["email"])
+        search = {"owner": userContext["email"], "dsh": dshId, "target": target}
         headers = {"Content-Type": "application/json"}  # Specify JSON content type
-        response = requests.post(f"{url}/dash/search", data=json.dumps(search), headers=headers)
+        response = requests.post(
+            f"{url}/dash/search", data=json.dumps(search), headers=headers
+        )
         print(response.status_code)
-        if response.status_code==200:
+        if response.status_code == 200:
             print("on python response")
             _data = response.json()
-            #print(_data)
+            # print(_data)
             if _data:
                 table = _data["table"]
-                return JsonResponse({"table": table})  # Return the table content as JSON
+                return JsonResponse(
+                    {"table": table}
+                )  # Return the table content as JSON
         else:
             print("entro except")
             pass
-            
 
     # If no data is found or if the request method is not POST, return an empty JSON response
     return JsonResponse({})
-
 
 
 @session_auth_not_required
@@ -131,21 +133,23 @@ def chart_1(owner, dsh):
         y_values = [entry["count"] for entry in data]
 
         # Gradient of IBM blue colors
-        colors = ["#004144", 
-                  "#005d5d", 
-                  "#004144", 
-                  "#005d5d", 
-                  "#004144", 
-                  "#00539a", 
-                  "#003a6d", 
-                  "#00539a", 
-                  "#003a6d", 
-                  "#00539a", 
-                  "#002d9c", 
-                  "#0043ce", 
-                  "#002d9c",
-                  "#0043ce", 
-                  "#002d9c"]
+        colors = [
+            "#004144",
+            "#005d5d",
+            "#004144",
+            "#005d5d",
+            "#004144",
+            "#00539a",
+            "#003a6d",
+            "#00539a",
+            "#003a6d",
+            "#00539a",
+            "#002d9c",
+            "#0043ce",
+            "#002d9c",
+            "#0043ce",
+            "#002d9c",
+        ]
 
         fig = go.Figure(
             data=[
@@ -162,16 +166,16 @@ def chart_1(owner, dsh):
             layout=go.Layout(
                 title="Certification Bar Chart",
                 title_font=dict(color="#f4f4f4"),
-                #xaxis=dict(title="Percentage", title_font=dict(color="#c6c6c6")),
+                # xaxis=dict(title="Percentage", title_font=dict(color="#c6c6c6")),
                 yaxis=dict(
-                    #title="Certification",
-                    #title_font=dict(color="#c6c6c6"),
+                    # title="Certification",
+                    # title_font=dict(color="#c6c6c6"),
                     tickfont=dict(color="#c6c6c6", size=12),  # Set a smaller font size
-                    automargin=True
+                    automargin=True,
                 ),
                 plot_bgcolor="#21272a",
                 paper_bgcolor="#21272a",
-                margin=dict(l=200, r=25, t=60, b=50, pad=10)
+                margin=dict(l=200, r=25, t=60, b=50, pad=10),
             ),
         )
         fig.update_layout(
@@ -210,17 +214,16 @@ def chart_2(owner, dsh):
         )
 
         data = response.json()
-        #print(data)
-        '''labels=[]
+        # print(data)
+        """labels=[]
         values=[]
         for entry in data:
             labels.append(entry["org"])
             values.append(entry["percentage"])
-            print()'''
-        
-        
-        labels = [entry['org'] for entry in data]
-        values = [entry['percentage'] for entry in data]
+            print()"""
+
+        labels = [entry["org"] for entry in data]
+        values = [entry["percentage"] for entry in data]
 
         colors = ["#00008B", "#4169E1", "#00FFFF"]  # Dark blue, Royal blue, Cyan
 
@@ -336,7 +339,6 @@ def chart_3(owner, dsh):
             },
             plot_bgcolor="#21272a",  # Transparent plot background
             paper_bgcolor="#21272a",  # Transparent paper background
-
             annotations=[
                 dict(
                     xref="paper",
@@ -348,10 +350,8 @@ def chart_3(owner, dsh):
                     hovertext="Top 5 and Bottom 5 places per quantity of certifications.",
                     hoverlabel=dict(bgcolor="#21272a", font=dict(color="white")),
                 )
-            ]
+            ],
         )
-    
-
 
         return fig.to_html(full_html=False, config={"responsive": True})
     except requests.exceptions.RequestException as e:
@@ -444,9 +444,11 @@ def chart_4(owner, dsh):
                         y=1.1,
                         yanchor="top",
                         bgcolor="#1c1c1c",  # Set dropdown background color to black
-                        font=dict(color="gray", size=10),  # Set dropdown text color to white
+                        font=dict(
+                            color="gray", size=10
+                        ),  # Set dropdown text color to white
                         # activecolor="gray",  # Set active dropdown color to gray
-                    )   
+                    )
                 ],
                 plot_bgcolor="#21272a",  # Transparent plot background
                 paper_bgcolor="#21272a",  # Transparent paper background
@@ -491,9 +493,7 @@ def add(request):
     if request.method == "POST":
         # Check if a file is present in the request
         if "file" not in request.FILES:
-            return render(
-                request, "private/add.html", {"error": "No file selected"}
-            )
+            return render(request, "private/add.html", {"error": "No file selected"})
 
         file = request.FILES["file"]
         email = userContext["email"]
@@ -505,7 +505,7 @@ def add(request):
             # Make a POST request to the backend endpoint
             files = {"file": file}
             response = requests.post(f"{url}/upload", data=payload, files=files)
-            #print(response)
+            # print(response)
 
             if response.status_code == 200:
                 return render(
@@ -599,7 +599,6 @@ def dashboard(request):
                     "chart_4div": chart_4(userContext["email"], 3),
                 }
             )
-    
 
         return render(
             request,
